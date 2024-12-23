@@ -1,4 +1,52 @@
 <!-- resources/views/components/navbar.blade.php -->
+
+<style>
+    .navbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 3px solid #e0e0e0;
+        /* Garis bawah navbar */
+        background-color: #fff;
+        /* Warna latar putih */
+        padding: 10px 0;
+        font-family: "Montserrat", serif;
+    }
+
+    .navbar a {
+        text-decoration: none;
+        color: #000;
+        /* Warna teks */
+        margin: 0 15px;
+        /* Spasi antar item menu */
+        font-size: 16px;
+        position: relative;
+        padding-bottom: 5px;
+    }
+
+    .navbar a:hover {
+        color: #000;
+        /* Tetap hitam saat hover */
+    }
+
+    .navbar a.active {
+        color: #000;
+        /* Warna teks item aktif */
+    }
+
+    .navbar a.active::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #90ee90;
+        /* Warna hijau muda */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+
 <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</a>
