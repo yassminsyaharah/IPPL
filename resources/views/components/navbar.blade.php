@@ -49,30 +49,30 @@
 
 <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</a>
+        <a class="navbar-brand fw-semibold" href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</a>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/') }}">Home</a>
+                    <a class="nav-link fw-semibold" href="{{ url('/') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/recommendations') }}">Recommendations</a>
+                    <a class="nav-link fw-semibold" href="{{ url('/recommendations') }}">Recommendations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/bookmarks') }}">Bookmarks</a>
+                    <a class="nav-link fw-semibold" href="{{ url('/bookmarks') }}">Bookmarks</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 @guest
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                        <a class="nav-link fw-semibold" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
                     @if (Route::has('register'))
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            <a class="nav-link fw-semibold" href="{{ route('register') }}">{{ __('Register') }}</a>
                         </li>
                     @endif
                 @else
@@ -82,7 +82,7 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+                            <a class="dropdown-item fw-semibold" href="{{ route('logout') }}" onclick="event.preventDefault();
                                              document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
                             </a>
