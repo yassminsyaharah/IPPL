@@ -35,7 +35,7 @@
     <div class="container-fluid vh-100 d-flex flex-column overflow-auto p-0 m-0" id="app">
         @include('components.navbar')
 
-        <main class="flex-grow-1 d-flex flex-column p-0 m-0" style="margin-top: 4rem">
+        <main class="flex-grow-1 d-flex flex-column p-0 m-0" style="margin-top: 4rem;">
             @yield('content')
         </main>
     </div>

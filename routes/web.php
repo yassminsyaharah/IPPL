@@ -9,8 +9,8 @@ Route::get ( '/', function ()
 
 Route::get ( '/recommendations', function ()
 {
-    return 'Recommendations Page';
-} );
+    return view ( 'recommendations' );
+} )->name ( 'recommendations' );
 
 Route::get ( '/bookmarks', function ()
 {
