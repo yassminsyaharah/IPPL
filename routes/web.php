@@ -14,7 +14,7 @@ Route::get ( '/recommendations', function ()
 
 Route::get ( '/bookmarks', function ()
 {
-    return 'Bookmarks Page';
+    return view ( 'bookmarks' );
 } )->name ( 'bookmarks' );
 
 Route::get ( '/home', function ()
