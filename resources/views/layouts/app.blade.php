@@ -33,7 +33,9 @@
 
 <body class="overflow-hidden p-0 m-0">
     <div class="container-fluid vh-100 d-flex flex-column overflow-auto p-0 m-0" id="app">
-        @include('components.navbar')
+        @if (Route::currentRouteName() !== 'place.detail')
+            @include('components.navbar')
+        @endif
 
         <main class="flex-grow-1 d-flex flex-column p-0 m-0" style="margin-top: 4rem;">
             @yield('content')

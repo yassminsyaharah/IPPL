@@ -64,3 +64,8 @@ Route::post ( '/resend-verification', function ()
     // Resend verification code logic here
     return back ()->with ( 'status', 'Verification link sent!' );
 } )->name ( 'verification.resend' );
+
+Route::get ( '/place/{id}', function ($id)
+{
+    return view ( 'place-detail', [ 'id' => $id ] );
+} )->name ( 'place.detail' );
