@@ -15,12 +15,12 @@ Route::get ( '/recommendations', function ()
 Route::get ( '/bookmarks', function ()
 {
     return 'Bookmarks Page';
-} );
+} )->name ( 'bookmarks' );
 
 Route::get ( '/home', function ()
 {
-    return 'Home Page';
-} );
+    return redirect ()->route ( 'onboarding' );
+} )->name ( 'home' );
 
 Route::get ( '/login', function ()
 {
