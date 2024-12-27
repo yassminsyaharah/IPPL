@@ -25,17 +25,17 @@
     <!-- Styles -->
     {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
 
-    <!-- Vite Styles -->
-    @vite('resources/css/app.css')
+    <!-- Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
 </head>
 
-<body class="bg-navy">
-    <div class="container-fluid min-vh-100 d-flex flex-column" id="app">
+<body class="overflow-hidden p-0 m-0">
+    <div class="container-fluid vh-100 d-flex flex-column overflow-auto p-0 m-0" id="app">
         @include('components.navbar')
 
-        <main class="flex-grow-1 d-flex flex-column" style="margin-top: 4rem;">
+        <main class="flex-grow-1 d-flex flex-column p-0 m-0" style="margin-top: 4rem">
             @yield('content')
         </main>
     </div>
@@ -51,9 +51,6 @@
 
     <!-- Scripts -->
     {{-- <script src="{{ asset('js/app.js') }}" defer></script> --}}
-
-    <!-- Vite Scripts -->
-    @vite('resources/js/app.js')
 
     @stack('scripts')
 </body>

@@ -49,7 +49,7 @@
 @section('content')
     <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1" id="main-content">
         <div class="mb-4">
-            <img class="brand-logo img-fluid" src="{{ asset('logo.png') }}" alt="Travelin Logo" style="max-width: 5dvw;">
+            <img class="brand-logo img-fluid" src="{{ asset('storage/logo.png') }}" alt="Travelin Logo" style="max-width: 5dvw;">
         </div>
         <div class="login-container">
             <h2 class="fw-bold">Login</h2>
@@ -76,9 +76,10 @@
                     <a class="text-danger text-decoration-none" href="{{ route('forgot.password') }}">Forgot Password</a>
                 </div>
                 <div class="d-grid mb-3">
-                    <button class="btn btn-success border-0 text-dark fw-medium" type="submit" style="background-color: #8dd3bb">Login</button>
+                    {{-- <button class="btn btn-success border-0 text-dark fw-medium" type="submit" style="background-color: #8dd3bb">Login</button> --}}
+                    <a class="btn btn-success border-0 text-dark fw-medium" type="submit" href="{{ route('onboarding') }}" style="background-color: #8dd3bb">Login</a>
                 </div>
-                <p class="text-center">Don't have an account? <a class="text-danger text-decoration-none" href="/signup">Sign up</a></p>
+                <p class="text-center">Don't have an account? <a class="text-danger text-decoration-none" href="{{ route('register') }}">Sign up</a></p>
                 <div class="divider pb-3"><span>Or login with</span></div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-google w-50" type="button" style="border-color: #8dd3bb;">

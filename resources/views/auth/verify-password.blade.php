@@ -55,7 +55,8 @@
                         <a class="text-danger text-decoration-none" href="{{ url()->current() }}">Resend</a>
                     </div>
                     <div class="d-grid">
-                        <button class="btn btn-success border-0 text-dark fw-medium" type="submit" style="background-color: #8dd3bb">Verify</button>
+                        {{-- <button class="btn btn-success border-0 text-dark fw-medium" type="submit" style="background-color: #8dd3bb">Verify</button> --}}
+                        <a class="btn btn-success border-0 text-dark fw-medium" type="submit" href="{{ route('login') }}" style="background-color: #8dd3bb">Verify</a>
                     </div>
                 </form>
             </div>

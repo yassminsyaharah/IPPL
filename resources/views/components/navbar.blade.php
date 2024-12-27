@@ -1,78 +1,78 @@
-<!-- resources/views/components/navbar.blade.php -->
+@if (Route::currentRouteName() == 'onboarding')
+    <style>
+        .navbar {
+            position: absolute;
+            /* Allows content to overlap */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 0;
+            /* Ensures navbar stays on top */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            /* Keeps navbar transparent */
+            padding: 20px 10px;
+            font-family: "Montserrat", serif;
+        }
 
-<style>
-    .navbar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-bottom: 3px solid #e0e0e0;
-        /* Garis bawah navbar */
-        background-color: #fff;
-        /* Warna latar putih */
-        padding: 10px 0;
-        font-family: "Montserrat", serif;
-    }
+        .navbar a {
+            text-decoration: none;
+            color: #000;
+            margin: 0 15px;
+            font-size: 16px;
+            position: relative;
+            padding-bottom: 5px;
+        }
 
-    .navbar a {
-        text-decoration: none;
-        color: #000;
-        /* Warna teks */
-        margin: 0 15px;
-        /* Spasi antar item menu */
-        font-size: 16px;
-        position: relative;
-        padding-bottom: 5px;
-    }
+        .navbar a:hover {
+            color: #000;
+        }
 
-    .navbar a:hover {
-        color: #000;
-        /* Tetap hitam saat hover */
-    }
+        .navbar a.active {
+            color: #000;
+        }
 
-    .navbar a.active {
-        color: #000;
-        /* Warna teks item aktif */
-    }
+        .navbar a.active::after {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: #90ee90;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+@endif
 
-    .navbar a.active::after {
-        content: "";
-        display: block;
-        width: 100%;
-        height: 2px;
-        background-color: #90ee90;
-        /* Warna hijau muda */
-        position: absolute;
-        bottom: 0;
-        left: 0;
-    }
-</style>
-
-<nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+<nav class="navbar navbar-expand-md bg-transparent">
     <div class="container-fluid">
-        <a class="navbar-brand fw-semibold" href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</a>
+        <a class="navbar-brand fw-semibold text-light" href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</a>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{{ url('/') }}">Home</a>
+                    <a class="nav-link fw-medium text-light" href="{{ url('/') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{{ url('/recommendations') }}">Recommendations</a>
+                    <a class="nav-link fw-medium text-light" href="{{ url('/recommendations') }}">Recommendations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{{ url('/bookmarks') }}">Bookmarks</a>
+                    <a class="nav-link fw-medium text-light" href="{{ url('/bookmarks') }}">Bookmarks</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 @guest
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold" href="{{ route('login') }}">{{ __('Login') }}</a>
+                        <a class="nav-link fw-medium text-light" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
                     @if (Route::has('register'))
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            <a class="nav-link fw-medium text-light" href="{{ route('register') }}">{{ __('Register') }}</a>
                         </li>
                     @endif
                 @else
@@ -82,8 +82,7 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item fw-semibold" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                             document.getElementById('logout-form').submit();">
+                            <a class="dropdown-item fw-semibold" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
                             </a>
 

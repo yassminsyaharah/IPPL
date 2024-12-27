@@ -47,7 +47,7 @@
 @section('content')
     <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1" id="main-content">
         <div class="mb-4">
-            <img class="brand-logo img-fluid" src="{{ asset('logo.png') }}" alt="Travelin Logo" style="max-width: 5dvw;">
+            <img class="brand-logo img-fluid" src="{{ asset('storage/logo.png') }}" alt="Travelin Logo" style="max-width: 5dvw;">
         </div>
         <div class="form-container">
             <h2 class="fw-bold">Sign up</h2>
