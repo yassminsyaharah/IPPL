@@ -17,10 +17,12 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
+    protected $fillable = [ 
         'name',
         'email',
+        'role',
         'password',
+        'phone_number', // Added phone_number to fillable attributes
     ];
 
     /**
@@ -28,21 +30,42 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
+    protected $hidden = [ 
         'password',
         'remember_token',
     ];
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'users';
 
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected function casts () : array
     {
-        return [
+        return [ 
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'name'              => 'string',
+            'email'             => 'string',
+            'role'              => 'string',
+            'phone_number'      => 'string', // Added phone_number to casts
         ];
+    }
+
+    /**
+     * Get the bookmarks for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bookmarks ()
+    {
+        return $this->hasMany ( Bookmark::class);
     }
 }

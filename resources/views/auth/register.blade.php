@@ -55,8 +55,8 @@
             <form method="POST" action="{{ route('register') }}">
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label" for="username">Username</label>
-                    <input class="form-control" id="username" name="username" type="text" placeholder="tubesimpal" required>
+                    <label class="form-label" for="name">Name</label>
+                    <input class="form-control" id="name" name="name" type="text" placeholder="John Doe" required>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -87,7 +87,7 @@
                     </div>
                 </div>
                 <div class="form-check mb-4">
-                    <input class="form-check-input" id="terms" type="checkbox" value="" required>
+                    <input class="form-check-input" id="terms" name="terms" type="checkbox" required>
                     <label class="form-check-label" for="terms">
                         I agree to all the <a class="text-decoration-none text-danger" href="#">Terms</a> and <a class="text-decoration-none text-danger" href="#">Privacy Policies</a>
                     </label>

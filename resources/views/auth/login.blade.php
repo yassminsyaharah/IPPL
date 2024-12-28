@@ -54,7 +54,7 @@
         <div class="login-container">
             <h2 class="fw-bold">Login</h2>
             <p class="text-muted">Login to access your Travelin account</p>
-            <form action="/login" method="POST">
+            <form action="{{ route('login') }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label class="form-label" for="email">Email</label>
@@ -76,8 +76,7 @@
                     <a class="text-danger text-decoration-none" href="{{ route('forgot.password') }}">Forgot Password</a>
                 </div>
                 <div class="d-grid mb-3">
-                    {{-- <button class="btn btn-success border-0 text-dark fw-medium" type="submit" style="background-color: #8dd3bb">Login</button> --}}
-                    <a class="btn btn-success border-0 text-dark fw-medium" type="submit" href="{{ route('onboarding') }}" style="background-color: #8dd3bb">Login</a>
+                    <button class="btn btn-success border-0 text-dark fw-medium" type="submit" style="background-color: #8dd3bb">Login</button>
                 </div>
                 <p class="text-center">Don't have an account? <a class="text-danger text-decoration-none" href="{{ route('register') }}">Sign up</a></p>
                 <div class="divider pb-3"><span>Or login with</span></div>

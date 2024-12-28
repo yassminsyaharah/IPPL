@@ -17,9 +17,9 @@
             font-family: "Montserrat", serif;
         }
 
-        .navbar a {
+        .navbar a:not(.dropdown-item) {
             text-decoration: none;
-            color: #000;
+            color: #ffffff;
             margin: 0 15px;
             font-size: 16px;
             position: relative;
@@ -71,7 +71,7 @@
             /* Adds a bottom border with transparency to act as a shadow */
         }
 
-        .navbar a {
+        .navbar a:not(.dropdown-item) {
             text-decoration: none;
             color: #000;
             margin: 0 15px;
@@ -109,6 +109,39 @@
     </style>
 @endif
 
+@auth
+    <style>
+        .animate {
+            animation-duration: 0.2s;
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(1rem);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0rem);
+                opacity: 1;
+            }
+        }
+
+        .slideIn {
+            animation-name: slideIn;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: #fff5f5;
+        }
+    </style>
+@endauth
+
 <nav class="navbar navbar-expand-md bg-transparent">
     <div class="container-fluid">
         <a class="navbar-brand fw-semibold" href="{{ route('home') }}">{{ config('app.name', 'Laravel') }}</a>
@@ -139,13 +172,21 @@
                     @endif
                 @else
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" v-pre>
+                        <a class="nav-link dropdown-toggle fw-medium d-flex align-items-center gap-2" id="navbarDropdown" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <img class="rounded-circle" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=90EE90&color=fff" alt="Profile" width="32" height="32">
                             {{ Auth::user()->name }}
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item fw-semibold" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
+                        <div class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="navbarDropdown" style="margin-top: 5%">
+                            <div class="px-4 py-3 border-bottom" id="profile">
+                                <div class="fw-semibold">{{ Auth::user()->name }}</div>
+                                <div class="small text-muted">{{ Auth::user()->email }}</div>
+                            </div>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
                             </a>
 
                             <form id="logout-form" style="display: none;" action="{{ route('logout') }}" method="POST">
