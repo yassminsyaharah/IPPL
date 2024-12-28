@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Bookmark;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Destination extends Model
 {
@@ -16,23 +18,22 @@ class Destination extends Model
         'description',
         'address',
         'province',
-        'opening_hour',
-        'closing_hour',
-        'photo_folder',
+        'operating_hours',
+        'image_folder_path',
+        'ratings',
+        'review_count'
     ];
 
-    protected function casts () : array
-    {
-        return [ 
-            'name'         => 'string',
-            'description'  => 'string',
-            'address'      => 'string',
-            'province'     => 'string',
-            'opening_hour' => 'datetime',
-            'closing_hour' => 'datetime',
-            'photo_folder' => 'string',
-        ];
-    }
+    protected $casts = [ 
+        'name'              => 'string',
+        'description'       => 'string',
+        'address'           => 'string',
+        'province'          => 'string',
+        'operating_hours'   => 'string',
+        'image_folder_path' => 'string',
+        'ratings'           => 'float',
+        'review_count'      => 'integer'
+    ];
 
     public function bookmarks ()
     {

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RedirectIfAuthenticated
+class UserMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,12 @@ class RedirectIfAuthenticated
     public function handle ( Request $request, Closure $next ) : Response
     {
         // Jika user terautentikasi, arahkan ke rute onboarding
-        if ( auth ()->check () )
+        if ( auth ()->check () && auth ()->user ()->role === "user" )
         {
-            return redirect ( "/" )->with ( 'success', 'Already logged in' );
+            return $next ( $request );
         }
 
         // Jika user tidak terautentikasi, arahkan ke rute login
-        return redirect ( "/login" )->with ( "error", "Unauthorized access" );
+        return redirect ( "/" )->with ( "error", "Unauthorized access" );
     }
 }

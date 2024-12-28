@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up () : void
     {
         Schema::create ( 'destinations', function (Blueprint $table)
@@ -18,17 +15,14 @@ return new class extends Migration
             $table->text ( 'description' );
             $table->string ( 'address' );
             $table->string ( 'province' );
-            $table->time ( 'opening_hour' )->nullable ();
-            $table->time ( 'closing_hour' )->nullable ();
-            $table->string ( 'photo_folder' )->nullable ();
-            // $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->string ( 'operating_hours' );
+            $table->string ( 'image_folder_path' )->nullable ();
+            $table->decimal ( 'ratings', 2, 1 )->default ( 0.0 );
+            $table->integer ( 'review_count' )->default ( 0 );
             $table->timestamps ();
         } );
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down () : void
     {
         Schema::dropIfExists ( 'destinations' );

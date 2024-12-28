@@ -50,6 +50,11 @@ class AuthController extends Controller
         {
             $request->session ()->regenerate ();
 
+            if ( Auth::user ()->role == 'admin' )
+            {
+                return redirect ()->route ( 'admin.dashboard.index' )->with ( 'success', 'Login successful!' );
+            }
+
             return redirect ()->route ( 'onboarding' )->with ( 'success', 'Login successful!' );
         }
 

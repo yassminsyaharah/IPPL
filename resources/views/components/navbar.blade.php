@@ -185,6 +185,12 @@
 
                             <div class="dropdown-divider"></div>
 
+                            @if (Auth::user()->role === 'admin')
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('admin.dashboard.index') }}">
+                                    <i class="fas fa-tachometer-alt"></i> {{ __('Dashboard') }}
+                                </a>
+                            @endif
+
                             <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
                             </a>
