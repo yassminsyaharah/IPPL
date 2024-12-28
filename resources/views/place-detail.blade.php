@@ -11,13 +11,7 @@
             </a>
             <h1 class="h3 fw-bold text-center flex-grow-1">{{ $place->name }}</h1>
             @auth
-                @php
-                    $isBookmarked = Auth::user()
-                        ->bookmarks()
-                        ->where('destination_id', $place->id)
-                        ->exists();
-                @endphp
-                <form action="{{ $isBookmarked? route('bookmarks.destroy', ['bookmark' => Auth::user()->bookmarks()->where('destination_id', $place->id)->first()->id]): route('bookmarks.store') }}" method="POST">
+                <form action="{{ $isBookmarked ? route('bookmarks.destroy', ['bookmark' => $bookmarkId]) : route('bookmarks.store') }}" method="POST">
                     @csrf
                     @if ($isBookmarked)
                         @method('DELETE')

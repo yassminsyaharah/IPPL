@@ -1,12 +1,13 @@
 @if (Route::currentRouteName() == 'onboarding' || Route::currentRouteName() == 'home')
     <style>
         .navbar {
-            position: absolute;
+            position: relative;
             /* Allows content to overlap */
-            top: 0;
+            margin-top: -5%;
+            top: 10%;
             left: 0;
             width: 100%;
-            z-index: 0;
+            z-index: 3;
             /* Ensures navbar stays on top */
             display: flex;
             justify-content: center;
@@ -69,6 +70,7 @@
             font-family: "Montserrat", serif;
             border-bottom: 5px solid rgba(125, 125, 125, 0.25);
             /* Adds a bottom border with transparency to act as a shadow */
+            z-index: 3;
         }
 
         .navbar a:not(.dropdown-item) {
@@ -139,6 +141,11 @@
         .dropdown-item.text-danger:hover {
             background-color: #fff5f5;
         }
+
+        .dropdown-menu {
+            z-index: 1050;
+            /* Ensure dropdown is in front of other elements */
+        }
     </style>
 @endauth
 
@@ -177,7 +184,7 @@
                             {{ Auth::user()->name }}
                         </a>
 
-                        <div class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="navbarDropdown" style="margin-top: 5%">
+                        <div class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="navbarDropdown" style="margin-top: 5%;">
                             <div class="px-4 py-3 border-bottom" id="profile">
                                 <div class="fw-semibold">{{ Auth::user()->name }}</div>
                                 <div class="small text-muted">{{ Auth::user()->email }}</div>

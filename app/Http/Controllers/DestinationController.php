@@ -27,12 +27,15 @@ class DestinationController extends Controller
         {
             $folderPath = 'destinations/' . uniqid ();
 
-            foreach ( $request->file ( 'images' ) as $image )
+            foreach ( $request->file ( 'images' ) as $index => $image )
             {
-                $image->store ( $folderPath, 'public' );
+                $extension = $image->getClientOriginalExtension ();
+                $filename  = sprintf ( '%03d.%s', $index + 1, $extension );
+                $image->storeAs ( $folderPath, $filename, 'public' );
             }
 
             $data[ 'image_folder_path' ] = $folderPath;
+            $data[ 'thumbnail' ]         = $folderPath . '/001.' . $request->file ( 'images' )[ 0 ]->getClientOriginalExtension ();
         }
 
         Destination::create ( $data );
@@ -65,11 +68,17 @@ class DestinationController extends Controller
             }
 
             $folderPath = 'destinations/' . uniqid ();
-            foreach ( $request->file ( 'images' ) as $image )
+
+            $images = array_reverse ( $request->file ( 'images' ) );
+            foreach ( $images as $index => $image )
             {
-                $image->store ( $folderPath, 'public' );
+                $extension = $image->getClientOriginalExtension ();
+                $filename  = sprintf ( '%03d.%s', $index + 1, $extension );
+                $image->storeAs ( $folderPath, $filename, 'public' );
             }
+
             $destination->image_folder_path = $folderPath;
+            $destination->thumbnail         = $folderPath . '/001.' . $images[ 0 ]->getClientOriginalExtension ();
         }
 
         $destination->save ();

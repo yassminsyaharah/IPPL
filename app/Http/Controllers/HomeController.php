@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Destination;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -34,10 +35,12 @@ class HomeController extends Controller
     public function bookmarks_index ()
     {
         $active_navbar = 'bookmarks';
+        $bookmarks     = Auth::user ()->bookmarks ()->with ( 'destination' )->get ();
         return view (
             'bookmarks',
             [ 
                 'active_navbar' => $active_navbar,
+                'bookmarks'     => $bookmarks,
             ]
         );
     }

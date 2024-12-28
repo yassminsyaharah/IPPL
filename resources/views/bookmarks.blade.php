@@ -6,7 +6,6 @@
         .header-title {
             font-size: 24px;
             font-weight: bold;
-            /* margin-bottom: 20px; */
             text-align: center;
         }
 
@@ -22,21 +21,22 @@
             display: flex;
             flex-direction: row;
             max-height: 250px;
-            /* Ensure card-image is on the left */
             border: 1px solid #eaeaea;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 0;
         }
 
         /* Card Image Section */
         .card-image {
             position: relative;
+            flex: 1;
         }
 
         .card-image img {
-            width: 440px;
-            height: 280px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
 
@@ -59,7 +59,6 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: flex-start;
-            /* Ensure alignment with card-image */
         }
 
         .card-title {
@@ -71,7 +70,6 @@
             font-size: 14px;
             color: #555;
             margin: 0px;
-            /* Kurangi margin bawah */
         }
 
         /* Rating Section */
@@ -80,12 +78,10 @@
             flex-direction: column;
             align-items: flex-start;
             margin: 0px;
-            /* Kurangi margin atas */
         }
 
         .card-text+.rating {
             margin: 0px;
-            /* Atur jarak spesifik hanya untuk elemen setelah .card-text */
         }
 
         .rating .stars {
@@ -133,29 +129,33 @@
 
 @section('content')
     <!-- Main Content -->
-    <div class="container-fluid w-100 py-5" style="padding-left: 5%; padding-right: 5%">
+    <div class="container-fluid w-100 py-5" style="padding-left: 5%; padding-right: 5%;">
         <h3 class="pb-4 fw-bold text-center">Bookmarks</h3>
         @if (Auth::check())
             <div class="card-container">
-                @foreach ([['title' => 'Garuda Wisnu Kencana (GWK)', 'address' => 'Jl. Raya Uluwatu, Ungasan, Kec. Kuta Sel., Kabupaten Badung, Bali', 'image' => 'GWK_2.png', 'rating' => '4.5', 'reviews' => 'Very Good 371 reviews'], ['title' => 'Ambrogio Patisserie', 'address' => 'Jl. Banda No.26, Citarum, Kec. Bandung Wetan, Kota Bandung', 'image' => 'Ambrogio_2.png', 'rating' => '4.0', 'reviews' => 'Very Good 54 reviews'], ['title' => 'Galeri Nasional Indonesia', 'address' => 'Jl. Medan Merdeka Tim., Gambir, Jakarta Pusat', 'image' => 'GaleriNasionalIndonesia.png', 'rating' => '3.9', 'reviews' => 'Very Good 123 reviews']] as $place)
+                @foreach ($bookmarks as $bookmark)
                     @php
-                        $rating = floatval($place['rating']);
+                        $place = $bookmark->destination;
+                        $rating = floatval($place->ratings);
                         $fullStars = floor($rating);
                         $halfStar = $rating - $fullStars >= 0.5 ? true : false;
+                        $imagePath = Storage::disk('public')->files($place->image_folder_path)[0] ?? null;
                     @endphp
                     <!-- Card -->
                     <div class="card mb-4 shadow-sm">
-                        <div class="row g-0">
-                            <div class="col-md-4">
+                        <div class="row g-0 w-100">
+                            <div class="col-md-3 p-0">
                                 <div class="card-image">
-                                    <img class="img-fluid rounded-start" src="{{ asset('/storage/' . $place['image']) }}" alt="{{ $place['title'] }}" />
+                                    @if ($imagePath)
+                                        <img class="img-fluid rounded-start" src="{{ asset('storage/' . $imagePath) }}" alt="{{ $place->name }}" />
+                                    @endif
                                     <p class="badge">9 images</p>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-9 px-2">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $place['title'] }}</h5>
-                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ $place['address'] }}</p>
+                                    <h5 class="card-title">{{ $place->name }}</h5>
+                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ $place->address }}</p>
                                     <div class="rating">
                                         <p class="stars p-0 m-0 pb-1" style="color: #ff8682">
                                             @for ($i = 0; $i < $fullStars; $i++)
@@ -169,16 +169,20 @@
                                             @endfor
                                         </p>
                                         <div class="score-reviews">
-                                            <p class="score">{{ $place['rating'] }}</p>
-                                            <p class="reviews"><strong>{{ explode(' ', $place['reviews'])[0] }} {{ explode(' ', $place['reviews'])[1] }}</strong> {{ implode(' ', array_slice(explode(' ', $place['reviews']), 2)) }}</p>
+                                            <p class="score">{{ $place->ratings }}</p>
+                                            <p class="reviews"><strong>{{ $place->review_count }} reviews</strong></p>
                                         </div>
                                     </div>
                                     <hr style="margin-top: 0px; border-top: 1px solid #000000; width: 100%;">
                                     <div class="d-flex w-100 gap-2">
-                                        <a class="rounded-2 flex-grow-0 btn btn-outline-secondary" href="#" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-bookmark text-dark"></i>
-                                        </a>
-                                        <a class="btn flex-grow-1 fw-semibold align-content-center" href="#" style="background-color: #8dd3bb">View Place</a>
+                                        <form action="{{ route('bookmarks.destroy', ['bookmark' => $bookmark->id]) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="rounded-2 flex-grow-0 btn btn-outline-secondary" type="submit" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-bookmark text-dark"></i>
+                                            </button>
+                                        </form>
+                                        <a class="btn flex-grow-1 fw-semibold align-content-center" href="{{ route('place.detail', ['id' => $place->id]) }}" style="background-color: #8dd3bb">View Place</a>
                                     </div>
                                 </div>
                             </div>
