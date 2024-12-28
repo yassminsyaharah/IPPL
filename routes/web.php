@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\DashboardAdminController;
+use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\BookmarkController;
 
 // Onboarding Routes
 Route::get (
@@ -28,6 +31,10 @@ Route::get (
     '/bookmarks',
     [ HomeController::class, 'bookmarks_index' ]
 )->name ( 'bookmarks' );
+
+Route::post ( '/bookmarks', [ BookmarkController::class, 'store' ] )->name ( 'bookmarks.store' );
+
+Route::delete ( '/bookmarks/{bookmark}', [ BookmarkController::class, 'destroy' ] )->name ( 'bookmarks.destroy' );
 
 // Authentication Routes
 Route::middleware ( [ 'guest.middleware' ] )->group ( function ()
@@ -59,27 +66,25 @@ Route::post (
 )->name ( 'logout' );
 
 // Password Routes
-Route::get ( '/forgot-password', function ()
-{
-    return view ( 'auth.forgot-password' );
-} )->name ( 'forgot.password' );
+Route::get (
+    '/forgot-password',
+    [ AuthController::class, 'forgot_password_index' ]
+)->name ( 'forgot.password' );
 
-Route::post ( '/forgot-password', function ()
-{
-    // Password reset logic here
-    return back ()->with ( 'status', 'Password reset link sent!' );
-} )->name ( 'password.email' );
+Route::post (
+    '/forgot-password',
+    [ AuthController::class, 'send_reset_link' ]
+)->name ( 'password.email' );
 
-Route::get ( '/verify-password', function ()
-{
-    return view ( 'auth.verify-password' );
-} )->name ( 'verify.password' );
+Route::get (
+    '/verify-password',
+    [ AuthController::class, 'verify_password_index' ]
+)->name ( 'verify.password' );
 
-Route::post ( '/verify-password', function ()
-{
-    // Verification logic here
-    return redirect ( '/home' );
-} )->name ( 'verification.verify' );
+Route::post (
+    '/verify-password',
+    [ AuthController::class, 'verify_password' ]
+)->name ( 'verification.verify' );
 
 Route::post ( '/resend-verification', function ()
 {
@@ -88,10 +93,10 @@ Route::post ( '/resend-verification', function ()
 } )->name ( 'verification.resend' );
 
 // Place Routes
-Route::get ( '/place/{id}', function ($id)
-{
-    return view ( 'place-detail', [ 'id' => $id ] );
-} )->name ( 'place.detail' );
+Route::get (
+    '/place/{id}',
+    [ PlaceController::class, 'show' ]
+)->name ( 'place.detail' );
 
 // Add this temporary debug route
 Route::get ( '/storage-test', function ()
@@ -128,7 +133,6 @@ Route::middleware ( [ 'CheckIfUser' ] )
     {
         Route::get ( '/', function ()
         {
-            dd ( "SSS" );
             return view ( 'dashboard.user.index' );
         } )->name ( 'index' );
 

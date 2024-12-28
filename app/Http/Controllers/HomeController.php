@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Destination;
 
 class HomeController extends Controller
 {
@@ -19,10 +20,12 @@ class HomeController extends Controller
 
     public function recommendations_index ()
     {
+        $destinations  = Destination::all ();
         $active_navbar = 'recommendations';
         return view (
             'recommendations',
             [ 
+                'destinations'  => $destinations,
                 'active_navbar' => $active_navbar,
             ]
         );

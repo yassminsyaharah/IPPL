@@ -17,7 +17,11 @@ class AuthController extends Controller
      */
     public function login_index ()
     {
-        return view ( 'auth.login' );
+        $active_navbar = 'login';
+
+        return view ( 'auth.login', [ 
+            'active_navbar' => $active_navbar
+        ] );
     }
 
     /**
@@ -27,7 +31,39 @@ class AuthController extends Controller
      */
     public function index_register ()
     {
-        return view ( 'auth.register' );
+        $active_navbar = 'register';
+
+        return view ( 'auth.register', [ 
+            'active_navbar' => $active_navbar
+        ] );
+    }
+
+    /**
+     * Show the forgot password form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function forgot_password_index ()
+    {
+        $active_navbar = 'forgot-password';
+
+        return view ( 'auth.forgot-password', [ 
+            'active_navbar' => $active_navbar
+        ] );
+    }
+
+    /**
+     * Show the verify password form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function verify_password_index ()
+    {
+        $active_navbar = 'verify-password';
+
+        return view ( 'auth.verify-password', [ 
+            'active_navbar' => $active_navbar
+        ] );
     }
 
     /**
@@ -110,5 +146,29 @@ class AuthController extends Controller
         $request->session ()->regenerateToken ();
 
         return redirect ( '/login' );
+    }
+
+    /**
+     * Handle sending the password reset link.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function send_reset_link ( Request $request )
+    {
+        // Password reset logic here
+        return back ()->with ( 'status', 'Password reset link sent!' );
+    }
+
+    /**
+     * Handle password verification.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function verify_password ( Request $request )
+    {
+        // Verification logic here
+        return redirect ( '/home' );
     }
 }

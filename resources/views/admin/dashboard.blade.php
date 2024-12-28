@@ -50,13 +50,21 @@
                             </td>
                             <td class="text-center">{{ $destination->review_count }}</td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editDestinationModal{{ $destination->id }}">Edit</button>
-                                <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#previewImagesModal{{ $destination->id }}">Pratinjau Gambar</button>
-                                <form class="d-inline" action="{{ route('admin.dashboard.destinations.destroy', $destination) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Apakah Anda yakin?')">Hapus</button>
-                                </form>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editDestinationModal{{ $destination->id }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#previewImagesModal{{ $destination->id }}">
+                                        <i class="fas fa-images"></i>
+                                    </button>
+                                    <form class="d-inline" action="{{ route('admin.dashboard.destinations.destroy', $destination) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Apakah Anda yakin?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

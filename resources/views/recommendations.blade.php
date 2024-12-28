@@ -6,13 +6,18 @@
             position: relative;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
             background: #fff;
+            width: 100%;
+            height: 400px;
+            /* Set a fixed height for the card */
         }
 
         .custom-card img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+            /* Ensure the image covers the card area */
             display: block;
         }
 
@@ -47,6 +52,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
+            /* Ensure the link looks like a button */
         }
 
         .custom-button:hover {
@@ -63,17 +70,22 @@
     <!-- Recommendations Section -->
     <div class="container py-5">
         <h3 class="mb-4 fw-bold">Recommendations</h3>
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            @foreach ([['title' => 'Tones No.6', 'address' => 'Jalan abc', 'image' => 'tonesno6.png'], ['title' => 'Tahura', 'address' => 'Jalan Dago Pakar', 'image' => 'Tahura.png'], ['title' => 'GWK', 'address' => 'Jalan Raya Uluwatu, Bali', 'image' => 'gwk.png'], ['title' => 'Ambrogio', 'address' => 'Jalan Banda, Bandung', 'image' => 'ambrogio.png']] as $place)
+        <div class="row row-cols-1 row-cols-md-2 g-5"> <!-- Increase gap between cards -->
+            @foreach ($destinations as $place)
                 <div class="col d-flex justify-content-center">
                     <div class="custom-card">
-                        <img src="{{ asset('storage/' . $place['image']) }}" alt="{{ $place['title'] }}">
+                        @php
+                            $imagePath = Storage::disk('public')->files($place->image_folder_path)[0] ?? null;
+                        @endphp
+                        @if ($imagePath)
+                            <img src="{{ asset('storage/' . $imagePath) }}" alt="{{ $place->name }}">
+                        @endif
                         <div class="custom-card-overlay">
-                            <h5 class="custom-card-title">{{ $place['title'] }}</h5>
-                            <p class="custom-card-subtitle">{{ $place['address'] }}</p>
-                            <button class="custom-button text-dark">
+                            <h5 class="custom-card-title">{{ $place->name }}</h5>
+                            <p class="custom-card-subtitle">{{ $place->address }}</p>
+                            <a class="custom-button text-dark" href="{{ route('place.detail', ['id' => $place->id]) }}">
                                 <i class="fas fa-paper-plane pe-2"></i> Lihat
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

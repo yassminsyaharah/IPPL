@@ -7,19 +7,23 @@ use App\Models\Destination;
 
 class DashboardAdminController extends Controller
 {
-    public function index()
+    public function index ()
     {
-        $destinations = Destination::all();
-        return view('admin.dashboard', compact('destinations'));
+        $destinations  = Destination::all ();
+        $active_navbar = 'dashboard_admin';
+        return view ( 'admin.dashboard', [ 
+            'destinations'  => $destinations,
+            'active_navbar' => $active_navbar
+        ] );
     }
 
-    public function analytics()
+    public function analytics ()
     {
-        return view('dashboard.admin.analytics');
+        return view ( 'dashboard.admin.analytics' );
     }
 
-    public function settings()
+    public function settings ()
     {
-        return view('dashboard.admin.settings');
+        return view ( 'dashboard.admin.settings' );
     }
 }
