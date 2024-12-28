@@ -35,7 +35,13 @@ class HomeController extends Controller
     public function bookmarks_index ()
     {
         $active_navbar = 'bookmarks';
-        $bookmarks     = Auth::user ()->bookmarks ()->with ( 'destination' )->get ();
+        $bookmarks     = [];
+
+        if ( Auth::check () )
+        {
+            $bookmarks = Auth::user ()->bookmarks ()->with ( 'destination' )->get ();
+        }
+
         return view (
             'bookmarks',
             [ 
