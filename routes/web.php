@@ -2,31 +2,32 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardAdminController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\DashboardAdminController;
 
 // Onboarding Routes
-Route::get ( '/', function ()
-{
-    return view ( 'onboarding' );
-} )->name ( 'onboarding' );
+Route::get (
+    '/',
+    [ HomeController::class, 'onboarding_index' ]
+)->name ( 'onboarding' );
 
-Route::get ( '/home', function ()
-{
-    return redirect ()->route ( 'onboarding' );
-} )->name ( 'home' );
+Route::get (
+    '/home',
+    [ HomeController::class, 'onboarding_index' ]
+)->name ( 'home' );
 
 // Recommendation Routes
-Route::get ( '/recommendations', function ()
-{
-    return view ( 'recommendations' );
-} )->name ( 'recommendations' );
+Route::get (
+    '/recommendations',
+    [ HomeController::class, 'recommendations_index' ]
+)->name ( 'recommendations' );
 
 // Bookmark Routes
-Route::get ( '/bookmarks', function ()
-{
-    return view ( 'bookmarks' );
-} )->name ( 'bookmarks' );
+Route::get (
+    '/bookmarks',
+    [ HomeController::class, 'bookmarks_index' ]
+)->name ( 'bookmarks' );
 
 // Authentication Routes
 Route::middleware ( [ 'guest.middleware' ] )->group ( function ()
@@ -93,16 +94,31 @@ Route::get ( '/place/{id}', function ($id)
 } )->name ( 'place.detail' );
 
 // Add this temporary debug route
-Route::get('/storage-test', function() {
+Route::get ( '/storage-test', function ()
+{
     $path = 'destinations/676f6088c2640';
-    return [
-        'storage_path' => storage_path('app/public/' . $path),
-        'exists' => Storage::exists('public/' . $path),
-        'files' => Storage::exists('public/' . $path) ? Storage::files('public/' . $path) : [],
-        'all_files' => Storage::allFiles('public'),
-        'directories' => Storage::directories('public'),
+    return [ 
+        'storage_path' => storage_path ( 'app/public/' . $path ),
+        'exists'       => Storage::exists ( 'public/' . $path ),
+        'files'        => Storage::exists ( 'public/' . $path ) ? Storage::files ( 'public/' . $path ) : [],
+        'all_files'    => Storage::allFiles ( 'public' ),
+        'directories'  => Storage::directories ( 'public' ),
     ];
-});
+} );
+
+Route::get ( '/test-storage', function ()
+{
+    // Create a test file
+    Storage::disk ( 'public' )->put ( 'test.txt', 'Hello World' );
+
+    return [ 
+        'file_exists'  => Storage::disk ( 'public' )->exists ( 'test.txt' ),
+        'file_url'     => Storage::disk ( 'public' )->url ( 'test.txt' ),
+        'storage_path' => storage_path ( 'app/public' ),
+        'public_path'  => public_path ( 'storage' ),
+        'is_linked'    => file_exists ( public_path ( 'storage' ) ),
+    ];
+} );
 
 // User Dashboard Routes
 Route::middleware ( [ 'CheckIfUser' ] )

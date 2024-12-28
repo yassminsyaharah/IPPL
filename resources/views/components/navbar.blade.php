@@ -1,4 +1,4 @@
-@if (Route::currentRouteName() == 'onboarding')
+@if (Route::currentRouteName() == 'onboarding' || Route::currentRouteName() == 'home')
     <style>
         .navbar {
             position: absolute;
@@ -27,11 +27,11 @@
         }
 
         .navbar a:hover {
-            color: #000;
+            color: #ffffff;
         }
 
         .navbar a.active {
-            color: #000;
+            color: #ffffff !important;
         }
 
         .navbar a.active::after {
@@ -151,13 +151,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link fw-medium" href="{{ route('home') }}">Home</a>
+                    <a class="nav-link fw-medium {{ $active_navbar == 'onboarding' ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-medium" href="{{ route('recommendations') }}">Recommendations</a>
+                    <a class="nav-link fw-medium {{ $active_navbar == 'recommendations' ? 'active' : '' }}" href="{{ route('recommendations') }}">Recommendations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-medium" href="{{ route('bookmarks') }}">Bookmarks</a>
+                    <a class="nav-link fw-medium {{ $active_navbar == 'bookmarks' ? 'active' : '' }}" href="{{ route('bookmarks') }}">Bookmarks</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
