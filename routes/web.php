@@ -8,6 +8,7 @@ use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\SubscriptionController;
 
 // Onboarding Routes
 Route::get (
@@ -124,6 +125,15 @@ Route::get ( '/test-storage', function ()
         'is_linked'    => file_exists ( public_path ( 'storage' ) ),
     ];
 } );
+
+// Search Route
+Route::get (
+    '/search',
+    [ HomeController::class, 'search' ]
+)->name ( 'search' );
+
+// Subscription Route
+Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
 
 // User Dashboard Routes
 Route::middleware ( [ 'CheckIfUser' ] )

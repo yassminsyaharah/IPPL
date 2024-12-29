@@ -133,7 +133,7 @@
         <h3 class="pb-4 fw-bold text-center">Bookmarks</h3>
         @if (Auth::check())
             <div class="card-container">
-                @foreach ($bookmarks as $bookmark)
+                @forelse ($bookmarks as $bookmark)
                     @php
                         $place = $bookmark->destination;
                         $rating = floatval($place->ratings);
@@ -170,7 +170,19 @@
                                         </p>
                                         <div class="score-reviews">
                                             <p class="score">{{ $place->ratings }}</p>
-                                            <p class="reviews"><strong>{{ $place->review_count }} reviews</strong></p>
+                                            <p class="reviews">
+                                                @php
+                                                    $ratingText = match(true) {
+                                                        $place->ratings == 5.0 => 'Excellent',
+                                                        $place->ratings >= 4.0 => 'Good',
+                                                        $place->ratings >= 3.0 => 'Fair',
+                                                        $place->ratings >= 2.0 => 'Poor',
+                                                        $place->ratings >= 1.0 => 'Very Poor',
+                                                        default => 'Terrible'
+                                                    };
+                                                @endphp
+                                                <strong>{{ $ratingText }}</strong> - <strong>{{ $place->review_count }} reviews</strong>
+                                            </p>
                                         </div>
                                     </div>
                                     <hr style="margin-top: 0px; border-top: 1px solid #000000; width: 100%;">
@@ -188,11 +200,19 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="m-0 py-3 px-2">
+                        <div class="alert alert-warning text-center shadow-sm" role="alert">
+                            Belum ada tempat yang di-bookmark. Silahkan lihat <a class="alert-link" href="{{ route('recommendations') }}">Rekomendasi</a> untuk menambahkan tempat favoritmu.
+                        </div>
+                    </div>
+                @endforelse
             </div>
         @else
-            <div class="alert alert-warning text-center" role="alert">
-                Please <a class="alert-link" href="{{ route('login') }}">Login</a> first to view your bookmarks.
+            <div class="m-0 py-3 px-2">
+                <div class="alert alert-warning text-center shadow-sm" role="alert">
+                    Silakan <a class="alert-link" href="{{ route('login') }}">Login</a> terlebih dahulu untuk melihat bookmark Anda.
+                </div>
             </div>
         @endif
     </div>

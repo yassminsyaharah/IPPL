@@ -46,16 +46,17 @@
         flex: 1;
     }
 
-    .subscription-section button {
+    #subscribe-btn {
         padding: 10px 20px;
         background-color: #333;
         color: white;
         border: none;
         border-radius: 0 5px 5px 0;
         cursor: pointer;
+        text-decoration: none;
     }
 
-    .subscription-section button:hover {
+    #subscribe-btn:hover {
         background-color: #555;
     }
 
@@ -133,8 +134,11 @@
         <h1>The Travel</h1>
         <p>Get inspired! Receive travel discounts, tips and behind the scenes stories.</p>
         <div class="input-group">
-            <input type="email" placeholder="Your email address">
-            <button>Subscribe</button>
+            <form action="{{ route('subscribe') }}" method="POST" class="d-flex w-100">
+                @csrf
+                <input type="email" name="email" placeholder="Your email address" required>
+                <button id="subscribe-btn" type="submit">Subscribe</button>
+            </form>
         </div>
     </div>
     <img src="{{ asset('/storage/mailbox.png') }}" alt="Illustration of a mailbox with a letter inside">
@@ -147,10 +151,10 @@
             <!-- Social Media Icons -->
             <div class="col-md-2 mb-4">
                 <div class="d-flex">
-                    <a class="text-dark me-3 fs-4" href="#"><i class="fab fa-facebook"></i></a>
-                    <a class="text-dark me-3 fs-4" href="#"><i class="fab fa-twitter"></i></a>
-                    <a class="text-dark me-3 fs-4" href="#"><i class="fab fa-youtube"></i></a>
-                    <a class="text-dark fs-4" href="#"><i class="fab fa-instagram"></i></a>
+                    <a class="text-dark me-3 fs-4" href="{{ url()->current() }}"><i class="fab fa-facebook"></i></a>
+                    <a class="text-dark me-3 fs-4" href="{{ url()->current() }}"><i class="fab fa-twitter"></i></a>
+                    <a class="text-dark me-3 fs-4" href="{{ url()->current() }}"><i class="fab fa-youtube"></i></a>
+                    <a class="text-dark fs-4" href="{{ url()->current() }}"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
 
@@ -158,39 +162,39 @@
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Destinasi</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Borobudur</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Pandawa</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Tebing Keraton</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Monas</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Borobudur</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Pandawa</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Tebing Keraton</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Monas</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Aktivitas</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Selancar</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Trekking</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Multi-aktivitas</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Outbound</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Selancar</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Trekking</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Multi-aktivitas</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Outbound</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Travel Blogs</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Bali Travel Guide</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Bali Travel Guide</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Tentang Kita</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Our Story</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Work with us</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Our Story</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Work with us</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Kontak</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Our Story</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="#">Work with us</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Our Story</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Work with us</a></li>
                 </ul>
             </div>
         </div>

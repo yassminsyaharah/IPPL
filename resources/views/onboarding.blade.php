@@ -61,12 +61,18 @@
             position: relative;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            background: #fff;
+            width: 100%;
+            height: 400px;
+            /* Set a fixed height for the card */
         }
 
         .custom-card img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+            /* Ensure the image covers the card area */
             display: block;
         }
 
@@ -76,7 +82,6 @@
             left: 0;
             right: 0;
             background: rgba(0, 0, 0, 0.4);
-            /* Semi-transparent black */
             color: #ffffff;
             padding: 16px;
             text-align: center;
@@ -102,6 +107,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
+            /* Ensure the link looks like a button */
         }
 
         .custom-button:hover {
@@ -116,19 +123,19 @@
 
 @section('content')
     <!-- Hero Section -->
-    <div class="hero-section d-flex align-items-center text-white" style="z-index: -1">
+    <div class="hero-section d-flex align-items-center text-white" style="z-index: 1">
         <div class="container text-center py-5">
             <h2 class="fw-bold mb-4">Helping Others</h2>
             <h1 class="display-4 fw-bold mb-4">LIVE & TRAVEL</h1>
             <p class="lead mb-4">Temukan destinasi lebih mudah</p>
 
             <div class="container mt-5">
-                <div class="custom-input-wrapper py-2 px-3">
-                    <input class="custom-input" type="text" placeholder="Search...">
-                    <button class="custom-button">
+                <form class="custom-input-wrapper py-2 px-3" id="searchForm">
+                    <input class="custom-input" id="searchInput" name="query" type="text" placeholder="Search..." autocomplete="off">
+                    <button class="custom-button" type="submit">
                         <i class="fas fa-paper-plane pe-2"></i> Cari Tempat
                     </button>
-                </div>
+                </form>
             </div>
 
         </div>
@@ -137,53 +144,35 @@
     <!-- Search Results -->
     <div class="container py-5" style="z-index: 1">
         <h3 class="mb-4">Hasil Pencarian</h3>
-
-        <div class="row g-4">
-            <!-- Card 1 -->
-            <div class="col-md-6 d-flex justify-content-center">
-                <div class="custom-card">
-                    <img src="{{ asset('/storage/Tahura.png') }}" alt="Entrance to Tahura forest, surrounded by tall trees">
-                    <div class="custom-card-overlay">
-                        <h5 class="custom-card-title">Tahura</h5>
-                        <p class="custom-card-subtitle">Jalan Dago Pakar</p>
-                        <button class="custom-button text-dark">
-                            <i class="fas fa-paper-plane pe-2"></i> Lihat
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="col-md-6 d-flex justify-content-center">
-                <div class="custom-card">
-                    <img src="{{ asset('/storage/Tahura.png') }}" alt="Entrance to Tahura forest, surrounded by tall trees">
-                    <div class="custom-card-overlay">
-                        <h5 class="custom-card-title">Tahura</h5>
-                        <p class="custom-card-subtitle">Jalan Dago Pakar</p>
-                        <button class="custom-button text-dark">
-                            <i class="fas fa-paper-plane pe-2"></i> Lihat
-                        </button>
-                    </div>
+        <div class="row g-4" id="searchResults">
+            <!-- Search results will be loaded here -->
+            <div class="m-0 py-3 px-2">
+                <div class="alert alert-info text-center shadow-sm" role="alert">
+                    Gunakan kotak pencarian di atas untuk menemukan tempat yang kamu inginkan.
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Recommendations -->
     <div class="container py-5" style="z-index: 1">
         <h3 class="mb-4">Rekomendasi</h3>
         <div class="row g-4">
-            @foreach ([['title' => 'Tones No.6', 'address' => 'Jalan abc', 'image' => 'tonesno6.png'], ['title' => 'Tahura', 'address' => 'Jalan Dago Pakar', 'image' => 'Tahura.png']] as $place)
+            @foreach ($destinations as $place)
                 <div class="col-md-6 d-flex justify-content-center">
                     <div class="custom-card">
-                        <img src="{{ asset('storage/' . $place['image']) }}" alt="{{ $place['title'] }}">
+                        @php
+                            $imagePath = Storage::disk('public')->files($place->image_folder_path)[0] ?? null;
+                        @endphp
+                        @if ($imagePath)
+                            <img src="{{ asset('storage/' . $imagePath) }}" alt="{{ $place->name }}">
+                        @endif
                         <div class="custom-card-overlay">
-                            <h5 class="custom-card-title">{{ $place['title'] }}</h5>
-                            <p class="custom-card-subtitle">{{ $place['address'] }}</p>
-                            <button class="custom-button text-dark">
+                            <h5 class="custom-card-title">{{ $place->name }}</h5>
+                            <p class="custom-card-subtitle">{{ $place->address }}</p>
+                            <a class="custom-button text-dark" href="{{ route('place.detail', ['id' => $place->id]) }}">
                                 <i class="fas fa-paper-plane pe-2"></i> Lihat
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -192,26 +181,67 @@
     </div>
 
     <!-- Bookmarks -->
-    <div class="container py-5" style="z-index: 1">
-        <h3 class="mb-4">Bookmark</h3>
-        <div class="row g-4">
-            @foreach ([['title' => 'GWK', 'address' => 'Jalan Raya Uluwatu, Bali', 'image' => 'gwk.png'], ['title' => 'Ambrogio', 'address' => 'Jalan Banda, Bandung', 'image' => 'ambrogio.png']] as $place)
-                <div class="col-md-6 d-flex justify-content-center">
-                    <div class="custom-card">
-                        <img src="{{ asset('storage/' . $place['image']) }}" alt="{{ $place['title'] }}">
-                        <div class="custom-card-overlay">
-                            <h5 class="custom-card-title">{{ $place['title'] }}</h5>
-                            <p class="custom-card-subtitle">{{ $place['address'] }}</p>
-                            <button class="custom-button text-dark">
-                                <i class="fas fa-paper-plane pe-2"></i> Lihat
-                            </button>
+    @auth
+        <div class="container py-5" style="z-index: 1">
+            <h3 class="mb-4">Bookmark</h3>
+            <div class="row g-4">
+                @forelse ($bookmarks as $bookmark)
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <div class="custom-card">
+                            @php
+                                $imagePath = Storage::disk('public')->files($bookmark->destination->image_folder_path)[0] ?? null;
+                            @endphp
+                            @if ($imagePath)
+                                <img src="{{ asset('storage/' . $imagePath) }}" alt="{{ $bookmark->destination->name }}">
+                            @endif
+                            <div class="custom-card-overlay">
+                                <h5 class="custom-card-title">{{ $bookmark->destination->name }}</h5>
+                                <p class="custom-card-subtitle">{{ $bookmark->destination->address }}</p>
+                                <a class="custom-button text-dark" href="{{ route('place.detail', ['id' => $bookmark->destination->id]) }}">
+                                    <i class="fas fa-paper-plane pe-2"></i> Lihat
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @empty
+                    <div class="m-0 py-3 px-2">
+                        <div class="alert alert-warning text-center shadow-sm" role="alert">
+                            Belum ada tempat yang di-bookmark. Silahkan lihat <a class="alert-link" href="{{ route('recommendations') }}">Rekomendasi</a> untuk menambahkan tempat favoritmu.
+                        </div>
+                    </div>
+                @endforelse
+            </div>
         </div>
-    </div>
+    @endauth
 
     <!-- Footer Section -->
     @include('components.footer')
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#searchForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let query = $('#searchInput').val();
+
+                $.ajax({
+                    url: "{{ route('search') }}",
+                    type: "GET",
+                    data: {
+                        query: query
+                    },
+                    success: function(response) {
+                        console.log(response);
+
+                        $('#searchResults').html(response.html);
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
