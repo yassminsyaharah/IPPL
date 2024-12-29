@@ -156,7 +156,12 @@
 
     <!-- Recommendations -->
     <div class="container py-5" style="z-index: 1">
-        <h3 class="mb-4">Rekomendasi</h3>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="m-0">Rekomendasi</h3>
+            <a class="btn btn-transparent border border-1 text-dark" href="{{ route('recommendations') }}">
+                <i class="fas fa-list pe-2"></i> Lihat Banyak Tempat
+            </a>
+        </div>
         <div class="row g-4">
             @foreach ($destinations as $place)
                 <div class="col-md-6 d-flex justify-content-center">
@@ -183,7 +188,12 @@
     <!-- Bookmarks -->
     @auth
         <div class="container py-5" style="z-index: 1">
-            <h3 class="mb-4">Bookmark</h3>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="m-0">Bookmark</h3>
+                <a class="btn btn-transparent border border-1 text-dark" href="{{ route('bookmarks') }}">
+                    <i class="fas fa-list pe-2"></i> Lihat Semua
+                </a>
+            </div>
             <div class="row g-4">
                 @forelse ($bookmarks as $bookmark)
                     <div class="col-md-6 d-flex justify-content-center">
