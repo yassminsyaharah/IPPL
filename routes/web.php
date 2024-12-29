@@ -94,7 +94,7 @@ Route::post ( '/resend-verification', function ()
 } )->name ( 'verification.resend' );
 
 // Place Routes
-Route::middleware ( 'RedirectIfAuthenticated' )
+Route::middleware ( 'CheckIfAuth' )
     ->group ( function ()
     {
         Route::get (
