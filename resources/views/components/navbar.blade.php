@@ -3,8 +3,8 @@
         .navbar {
             position: relative;
             /* Allows content to overlap */
-            margin-top: -6%;
-            top: 10%;
+            margin-top: -10%;
+            top: 15%;
             left: 0;
             width: 100%;
             z-index: 3;

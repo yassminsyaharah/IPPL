@@ -22,6 +22,25 @@
             font-size: 12px;
             color: #888;
         }
+
+        /* Add these new styles */
+        .carousel-inner {
+            max-height: 100%;
+            background-color: #f8f9fa;
+        }
+
+        .carousel-item {
+            height: 100%;
+            text-align: center;
+        }
+
+        .carousel-item img {
+            max-height: 100%;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            margin: auto;
+        }
     </style>
 @endpush
 
@@ -133,18 +152,38 @@
                 </p>
             </div>
 
-            <!-- Images -->
-            <div class="p-0 m-0 w-100 row mt-4">
+            <!-- Images Carousel -->
+            <div class="mt-4">
                 @php
                     $photos = Storage::disk('public')->files($place->image_folder_path);
                 @endphp
 
                 @if (count($photos) > 0)
-                    @foreach ($photos as $photo)
-                        <div class="col-md-6">
-                            <img class="img-fluid rounded" src="{{ Storage::disk('public')->url($photo) }}" alt="Image of {{ $place->name }}">
+                    <div class="carousel slide" id="placeImageCarousel" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            @foreach ($photos as $index => $photo)
+                                <button class="{{ $index === 0 ? 'active' : '' }}" data-bs-target="#placeImageCarousel" data-bs-slide-to="{{ $index }}" type="button" aria-current="{{ $index === 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}">
+                                </button>
+                            @endforeach
                         </div>
-                    @endforeach
+                        <div class="carousel-inner rounded">
+                            @foreach ($photos as $index => $photo)
+                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                    <img src="{{ Storage::disk('public')->url($photo) }}" alt="Image of {{ $place->name }}">
+                                </div>
+                            @endforeach
+                        </div>
+                        @if (count($photos) > 1)
+                            <button class="carousel-control-prev" data-bs-target="#placeImageCarousel" data-bs-slide="prev" type="button">
+                                <span class="carousel-control-prev-icon bg-secondary rounded-5 p-4" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" data-bs-target="#placeImageCarousel" data-bs-slide="next" type="button">
+                                <span class="carousel-control-next-icon bg-secondary rounded-5 p-4" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        @endif
+                    </div>
                 @else
                     <div class="text-center p-4">
                         <p class="text-muted">Tidak ada gambar tersedia untuk destinasi ini.</p>
