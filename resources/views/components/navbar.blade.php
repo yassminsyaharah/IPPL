@@ -1,13 +1,9 @@
 @if (Route::currentRouteName() == 'onboarding' || Route::currentRouteName() == 'home')
     <style>
         .navbar {
-            position: relative;
             /* Allows content to overlap */
-            margin-top: -10%;
-            top: 15%;
-            left: 0;
             width: 100%;
-            z-index: 3;
+            z-index: 0;
             /* Ensures navbar stays on top */
             display: flex;
             justify-content: center;
@@ -16,6 +12,8 @@
             /* Keeps navbar transparent */
             padding: 20px 10px;
             font-family: "Montserrat", serif;
+            /* Adds a bottom border with transparency to act as a shadow */
+            z-index: 3;
         }
 
         .navbar a:not(.dropdown-item) {

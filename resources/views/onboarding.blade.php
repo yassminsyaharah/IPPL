@@ -7,6 +7,8 @@
             background-size: cover;
             background-position: center;
             min-height: 60vh;
+            top: -5%;
+            position: relative;
         }
 
         .search-container {
