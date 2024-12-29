@@ -194,7 +194,7 @@
 
                             @if (Auth::user()->role === 'admin')
                                 <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('admin.dashboard.index') }}">
-                                    <i class="fas fa-tachometer-alt"></i> {{ __('Dashboard') }}
+                                    <i class="fas fa-tachometer-alt"></i> Kelola Destinasi
                                 </a>
                             @endif
 

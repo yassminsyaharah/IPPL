@@ -94,10 +94,14 @@ Route::post ( '/resend-verification', function ()
 } )->name ( 'verification.resend' );
 
 // Place Routes
-Route::get (
-    '/place/{id}',
-    [ PlaceController::class, 'show' ]
-)->name ( 'place.detail' );
+Route::middleware ( 'RedirectIfAuthenticated' )
+    ->group ( function ()
+    {
+        Route::get (
+            '/place/{id}',
+            [ PlaceController::class, 'show' ]
+        )->name ( 'place.detail' );
+    } );
 
 // Add this temporary debug route
 Route::get ( '/storage-test', function ()
@@ -133,7 +137,7 @@ Route::get (
 )->name ( 'search' );
 
 // Subscription Route
-Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscribe');
+Route::post ( '/subscribe', [ SubscriptionController::class, 'subscribe' ] )->name ( 'subscribe' );
 
 // User Dashboard Routes
 Route::middleware ( [ 'CheckIfUser' ] )
