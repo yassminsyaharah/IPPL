@@ -52,16 +52,16 @@ class DestinationController extends Controller
             'address'         => 'required|string',
             'province'        => 'required|string',
             'operating_hours' => 'required|string',
-            'ratings'         => 'required|numeric|min:0|max:5', // Add this line
-            'images.*'        => 'nullable|image|max:2048',
+            'ratings'         => 'required|numeric|min:0|max:5',
+            'images.*'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'review_count'    => 'required|integer|min:0',
         ] );
 
-        $destination->fill ( $request->except ( 'images' ) );
+        $data = $request->except ( 'images' );
 
         if ( $request->hasFile ( 'images' ) )
         {
-            // Delete old folder if exists
+            // Delete old image folder if exists
             if ( $destination->image_folder_path )
             {
                 Storage::disk ( 'public' )->deleteDirectory ( $destination->image_folder_path );
@@ -69,21 +69,21 @@ class DestinationController extends Controller
 
             $folderPath = 'destinations/' . uniqid ();
 
-            $images = array_reverse ( $request->file ( 'images' ) );
-            foreach ( $images as $index => $image )
+            foreach ( $request->file ( 'images' ) as $index => $image )
             {
                 $extension = $image->getClientOriginalExtension ();
                 $filename  = sprintf ( '%03d.%s', $index + 1, $extension );
                 $image->storeAs ( $folderPath, $filename, 'public' );
             }
 
-            $destination->image_folder_path = $folderPath;
-            $destination->thumbnail         = $folderPath . '/001.' . $images[ 0 ]->getClientOriginalExtension ();
+            $data[ 'image_folder_path' ] = $folderPath;
+            $data[ 'thumbnail' ]         = $folderPath . '/001.' . $request->file ( 'images' )[ 0 ]->getClientOriginalExtension ();
         }
 
-        $destination->save ();
+        $destination->update ( $data );
 
-        return redirect ()->route ( 'admin.dashboard.index' )->with ( 'success', 'Destination updated successfully.' );
+        return redirect ()->route ( 'admin.dashboard.index' )
+            ->with ( 'success', 'Destination updated successfully.' );
     }
 
     public function destroy ( Destination $destination )
