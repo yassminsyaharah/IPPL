@@ -233,10 +233,36 @@ Route::middleware ( 'CheckIfAuth' )
             [ IntelligentSystemController::class, 'showPlaceDetail' ]
         )->name ( 'place.detail_v2' );
 
+        Route::get (
+            '/borobudur-attractions',
+            [ IntelligentSystemController::class, 'showBorobudurAttractions' ]
+        )->name ( 'borobudur.attractions' );
+
+        Route::get (
+            '/pandawa-attractions',
+            [ IntelligentSystemController::class, 'showPandawaAttractions' ]
+        )->name ( 'pandawa.attractions' );
+
+        Route::get (
+            '/tebing-keraton-attractions',
+            [ IntelligentSystemController::class, 'showTebingKeratonAttractions' ]
+        )->name ( 'tebingkeraton.attractions' );
+
+        Route::get (
+            '/monas-attractions',
+            [ IntelligentSystemController::class, 'showMonasAttractions' ]
+        )->name ( 'monas.attractions' );
     } );
 
 Route::middleware ( 'auth' )->group ( function ()
 {
-    Route::post ( '/bookmarksv2', [ BookmarkController::class, 'storeV2' ] )->name ( 'bookmarks.storeV2' );
-    Route::delete ( '/bookmarksv2/{bookmark}', [ BookmarkController::class, 'destroyV2' ] )->name ( 'bookmarks.destroyV2' );
+    Route::post (
+        '/bookmarksv2',
+        [ BookmarkController::class, 'storeV2' ]
+    )->name ( 'bookmarks.storeV2' );
+
+    Route::delete (
+        '/bookmarksv2/{bookmark}',
+        [ BookmarkController::class, 'destroyV2' ]
+    )->name ( 'bookmarks.destroyV2' );
 } );

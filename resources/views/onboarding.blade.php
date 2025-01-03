@@ -200,7 +200,7 @@
         </div>
     </div>
 
-    {{-- <!-- Bookmarks -->
+    <!-- Bookmarks -->
     @auth
         <div class="container py-5" style="z-index: 1">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -210,34 +210,38 @@
                 </a>
             </div>
             <div class="row g-4">
-                @forelse ($bookmarks as $bookmark)
+                @php $hasBookmarks = false; @endphp
+
+                @foreach ($placesBookmarks as $place)
+                    @php $hasBookmarks = true; @endphp
                     <div class="col-md-6 d-flex justify-content-center">
                         <div class="custom-card">
-                            @php
-                                $imagePath = Storage::disk('public')->files($bookmark->destination->image_folder_path)[0] ?? null;
-                            @endphp
-                            @if ($imagePath)
-                                <img src="{{ asset('storage/' . $imagePath) }}" alt="{{ $bookmark->destination->name }}">
+                            @if ($place['photo_url'])
+                                <img src="{{ $place['photo_url'] }}" alt="{{ $place['name'] }}">
+                            @else
+                                <img src="{{ asset('images/placeholder.png') }}" alt="Placeholder Image">
                             @endif
                             <div class="custom-card-overlay">
-                                <h5 class="custom-card-title">{{ $bookmark->destination->name }}</h5>
-                                <p class="custom-card-subtitle">{{ $bookmark->destination->address }}</p>
-                                <a class="custom-button text-dark" href="{{ route('place.detail', ['id' => $bookmark->destination->id]) }}">
+                                <h5 class="custom-card-title">{{ $place['name'] }}</h5>
+                                <p class="custom-card-subtitle">{{ $place['address'] }}</p>
+                                <a class="custom-button text-dark" href="{{ route('place.detail_v2', ['placeId' => $place['place_id']]) }}">
                                     <i class="fas fa-paper-plane pe-2"></i> Lihat
                                 </a>
                             </div>
                         </div>
                     </div>
-                @empty
+                @endforeach
+
+                @if (!$hasBookmarks)
                     <div class="m-0 py-3 px-2">
                         <div class="alert alert-warning text-center shadow-sm" role="alert">
                             Belum ada tempat yang di-bookmark. Silahkan lihat <a class="alert-link" href="{{ route('recommendations') }}">Rekomendasi</a> untuk menambahkan tempat favoritmu.
                         </div>
                     </div>
-                @endforelse
+                @endif
             </div>
         </div>
-    @endauth --}}
+    @endauth
 
     <!-- Footer Section -->
     @include('components.footer')

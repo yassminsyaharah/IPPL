@@ -47,7 +47,7 @@
     <div class="flex-grow-1 p-0 m-0 pt-3">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center px-5">
-            <a class="btn p-0 m-0" type="button" href="{{ url()->previous() }}">
+            <a class="btn p-0 m-0" type="button" href="{{ route('recommendations') }}">
                 <i class="fa-solid fa-arrow-left fs-4"></i>
             </a>
             <div class="text-center flex-grow-1">
@@ -111,7 +111,7 @@
             <div class="mt-4">
                 <p>
                     <strong>Alamat:</strong> {{ $place->address }}
-                    <a href="{{ $place->maps_link }}" target="_blank">
+                    <a class="ps-1" href="{{ $place->maps_link }}" target="_blank">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                 </p>

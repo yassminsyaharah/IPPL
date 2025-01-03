@@ -162,10 +162,10 @@
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Destinasi</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Borobudur</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Pandawa</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Tebing Keraton</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Monas</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('borobudur.attractions') }}">Borobudur</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('pandawa.attractions') }}">Pandawa</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('tebingkeraton.attractions') }}">Tebing Keraton</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('monas.attractions') }}">Monas</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">

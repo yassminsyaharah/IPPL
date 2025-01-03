@@ -5,53 +5,115 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
-use GuzzleHttp\Client;
 
 class IntelligentSystemController extends Controller
 {
-    public function showPlaceDetail ( $placeId )
-    {
-        $apiKey     = env ( 'GOOGLE_PLACES_API_KEY' );
-        $proxy      = env ( 'SOCKS5_PROXY', '' );
-        $url        = "https://places.googleapis.com/v1/places/$placeId";
-        $maxWidthPx = 1024;
+    private $apiKey;
+    private $proxy;
+    private $baseUrl;
 
-        // Configure the HTTP client
+    public function __construct ()
+    {
+        $this->apiKey  = env ( 'GOOGLE_PLACES_API_KEY' );
+        $this->proxy   = env ( 'SOCKS5_PROXY', '' );
+        $this->baseUrl = 'https://places.googleapis.com/v1';
+    }
+
+    /**
+     * Configure the HTTP client with common settings.
+     */
+    private function configureHttpClient ()
+    {
         $httpClient = Http::withHeaders ( [ 
-            'X-Goog-Api-Key'   => $apiKey,
-            'X-Goog-FieldMask' => 'displayName,rating,formattedAddress,photos,editorialSummary,userRatingCount,reviews.rating,reviews.text,reviews.authorAttribution,googleMapsUri'
+            'X-Goog-Api-Key' => $this->apiKey,
         ] );
 
-        if ( ! empty ( $proxy ) )
+        if ( ! empty ( $this->proxy ) )
         {
-            $httpClient = $httpClient->withOptions ( [ 'proxy' => $proxy ] );
+            $httpClient = $httpClient->withOptions ( [ 'proxy' => $this->proxy ] );
         }
 
-        // Make the request
-        $response = $httpClient->get ( $url );
+        return $httpClient;
+    }
+
+    /**
+     * Fetch place details from the Google Places API.
+     */
+    private function fetchPlaceDetails ( $placeId )
+    {
+        $url        = "{$this->baseUrl}/places/{$placeId}";
+        $httpClient = $this->configureHttpClient ()->withHeaders ( [ 
+            'X-Goog-FieldMask' => 'displayName,rating,formattedAddress,photos,editorialSummary,userRatingCount,reviews.rating,reviews.text,reviews.authorAttribution,googleMapsUri',
+        ] );
+
+        return $httpClient->get ( $url );
+    }
+
+    /**
+     * Process photos for place details.
+     */
+    private function processPhotos ( $photos )
+    {
+        $processedPhotos = [];
+        foreach ( $photos as $photo )
+        {
+            $photoReference = $photo[ 'name' ] ?? null;
+            if ( $photoReference )
+            {
+                $processedPhotos[] = "{$this->baseUrl}/{$photoReference}/media?key={$this->apiKey}&maxWidthPx=1024";
+            }
+        }
+        return $processedPhotos;
+    }
+
+    /**
+     * Fetch search results from the Google Places API.
+     */
+    private function fetchSearchResults ( $query )
+    {
+        $url        = "{$this->baseUrl}/places:searchText";
+        $httpClient = $this->configureHttpClient ()->withHeaders ( [ 
+            'X-Goog-FieldMask' => 'places.displayName,places.id,places.photos,places.formattedAddress,places.rating',
+        ] );
+
+        return $httpClient->post ( $url, [ 'textQuery' => $query ] );
+    }
+
+    /**
+     * Process search results.
+     */
+    private function processSearchResults ( $places )
+    {
+        $placeData = [];
+        foreach ( $places as $place )
+        {
+            $photoReference = $place[ 'photos' ][ 0 ][ 'name' ] ?? null;
+            $placeData[]    = [ 
+                'id'        => $place[ 'id' ] ?? null,
+                'name'      => $place[ 'displayName' ][ 'text' ] ?? 'Unknown',
+                'address'   => $place[ 'formattedAddress' ] ?? 'No address available',
+                'photo_url' => $photoReference
+                    ? "{$this->baseUrl}/{$photoReference}/media?key={$this->apiKey}&maxWidthPx=700"
+                    : null,
+                'rating'    => $place[ 'rating' ] ?? 0, // Add rating to the place data
+            ];
+        }
+
+        return $placeData;
+    }
+
+    /**
+     * Display place details.
+     */
+    public function showPlaceDetail ( $placeId )
+    {
+        $response = $this->fetchPlaceDetails ( $placeId );
 
         if ( $response->successful () )
         {
             $placeDetails = $response->json ();
+            $photos       = isset ( $placeDetails[ 'photos' ] ) ? $this->processPhotos ( $placeDetails[ 'photos' ] ) : [];
 
-            // Process photos
-            $photos = [];
-            if ( isset ( $placeDetails[ 'photos' ] ) )
-            {
-                foreach ( $placeDetails[ 'photos' ] as $photo )
-                {
-                    $photoReference = $photo[ 'name' ] ?? null;
-                    $photoUrl       = $photoReference
-                        ? "https://places.googleapis.com/v1/{$photoReference}/media?key=$apiKey&maxWidthPx=$maxWidthPx"
-                        : null;
-                    if ( $photoUrl )
-                    {
-                        $photos[] = $photoUrl;
-                    }
-                }
-            }
-
-            // Create a structured object to pass to the view
             $place = (object) [ 
                 'id'           => $placeId,
                 'name'         => $placeDetails[ 'displayName' ][ 'text' ] ?? 'Unknown',
@@ -60,10 +122,14 @@ class IntelligentSystemController extends Controller
                 'address'      => $placeDetails[ 'formattedAddress' ] ?? 'No address available',
                 'reviews'      => $placeDetails[ 'reviews' ] ?? [],
                 'photos'       => $photos,
-                'maps_link'    => $placeDetails[ 'googleMapsUri' ] ?? ''
+                'maps_link'    => $placeDetails[ 'googleMapsUri' ] ?? '',
             ];
 
-            $active_navbar = 'recommendations';
+            // Sort reviews by rating in descending order
+            usort ( $place->reviews, function ($a, $b)
+            {
+                return $b[ 'rating' ] <=> $a[ 'rating' ];
+            } );
 
             $isBookmarked = false;
             $bookmarkId   = null;
@@ -76,10 +142,10 @@ class IntelligentSystemController extends Controller
             }
 
             return view ( 'place-detail_v2', [ 
-                'active_navbar' => $active_navbar,
+                'active_navbar' => 'recommendations',
                 'place'         => $place,
                 'isBookmarked'  => $isBookmarked,
-                'bookmarkId'    => $bookmarkId
+                'bookmarkId'    => $bookmarkId,
             ] );
         }
         else
@@ -91,68 +157,31 @@ class IntelligentSystemController extends Controller
         }
     }
 
-    public function surfing_index ( Request $request )
+    /**
+     * Generic method to display search results.
+     */
+    private function displaySearchResults ( $query, $subtitle )
     {
-        $apiKey = env ( 'GOOGLE_PLACES_API_KEY' );  // API key
-        $proxy  = env ( 'SOCKS5_PROXY', '' ); // Proxy (optional)
-        $url    = 'https://places.googleapis.com/v1/places:searchText';
-
-        // Define the request body
-        $body = [ 
-            'textQuery' => 'Surf Spot in Indonesia',
-        ];
-
-        // Configure the HTTP client
-        $httpClient = Http::withHeaders ( [ 
-            'X-Goog-Api-Key'   => $apiKey,
-            'X-Goog-FieldMask' => 'places.displayName,places.id,places.photos,places.formattedAddress',
-        ] );
-
-        if ( ! empty ( $proxy ) )
-        {
-            $httpClient = $httpClient->withOptions ( [ 'proxy' => $proxy ] );
-        }
-
-        // Make the request
-        $response = $httpClient->post ( $url, $body );
+        $response = $this->fetchSearchResults ( $query );
 
         if ( $response->successful () )
         {
-            $places = $response->json ()[ 'places' ] ?? [];
+            $places    = $response->json ()[ 'places' ] ?? [];
+            $placeData = $this->processSearchResults ( $places );
 
-            // Extract name, address, and the first photo reference for each place
-            $placeData = [];
-            foreach ( $places as $place )
+            // Sort places by rating in descending order, handling null ratings
+            usort ( $placeData, function ($a, $b)
             {
-                $name           = $place[ 'displayName' ][ 'text' ] ?? 'Unknown';
-                $address        = $place[ 'formattedAddress' ] ?? 'No address available';
-                $photoReference = isset ( $place[ 'photos' ][ 0 ][ 'name' ] ) ? $place[ 'photos' ][ 0 ][ 'name' ] : null;
-                $maxWidthPx     = 700;
-                $placeId        = $place[ 'id' ] ?? null;
+                $ratingA = $a[ 'rating' ] ?? 0;
+                $ratingB = $b[ 'rating' ] ?? 0;
+                return $ratingB <=> $ratingA;
+            } );
 
-                $photoUrl = $photoReference
-                    ? "https://places.googleapis.com/v1/{$photoReference}/media?key=$apiKey&maxWidthPx=$maxWidthPx"
-                    : null;
-
-                $placeData[] = [ 
-                    'id'        => $placeId,
-                    'name'      => $name,
-                    'address'   => $address,
-                    'photo_url' => $photoUrl,
-                ];
-            }
-
-            $active_navbar = 'recommendations';
-            $subtitle      = "Surfing";
-
-            return view (
-                'recommendations_v2',
-                [ 
-                    'active_navbar' => $active_navbar,
-                    'subtitle'      => $subtitle,
-                    'places'        => $placeData
-                ]
-            );
+            return view ( 'recommendations_v2', [ 
+                'active_navbar' => 'recommendations',
+                'subtitle'      => $subtitle,
+                'places'        => $placeData,
+            ] );
         }
         else
         {
@@ -161,211 +190,51 @@ class IntelligentSystemController extends Controller
                 'message' => $response->body (),
             ], $response->status () );
         }
+    }
+
+    public function surfing_index ( Request $request )
+    {
+        return $this->displaySearchResults ( 'Surf Spot in Indonesia', 'Surfing' );
     }
 
     public function trekking_index ( Request $request )
     {
-        $apiKey = env ( 'GOOGLE_PLACES_API_KEY' );
-        $proxy  = env ( 'SOCKS5_PROXY', '' );
-        $url    = 'https://places.googleapis.com/v1/places:searchText';
-
-        $body = [ 
-            'textQuery' => 'Hiking and Trekking Spot in Indonesia',
-        ];
-
-        $httpClient = Http::withHeaders ( [ 
-            'X-Goog-Api-Key'   => $apiKey,
-            'X-Goog-FieldMask' => 'places.displayName,places.id,places.photos,places.formattedAddress',
-        ] );
-
-        if ( ! empty ( $proxy ) )
-        {
-            $httpClient = $httpClient->withOptions ( [ 'proxy' => $proxy ] );
-        }
-
-        $response = $httpClient->post ( $url, $body );
-
-        if ( $response->successful () )
-        {
-            $places = $response->json ()[ 'places' ] ?? [];
-
-            $placeData = [];
-            foreach ( $places as $place )
-            {
-                $name           = $place[ 'displayName' ][ 'text' ] ?? 'Unknown';
-                $address        = $place[ 'formattedAddress' ] ?? 'No address available';
-                $photoReference = isset ( $place[ 'photos' ][ 0 ][ 'name' ] ) ? $place[ 'photos' ][ 0 ][ 'name' ] : null;
-                $maxWidthPx     = 700;
-                $placeId        = $place[ 'id' ] ?? null;
-
-                $photoUrl = $photoReference
-                    ? "https://places.googleapis.com/v1/{$photoReference}/media?key=$apiKey&maxWidthPx=$maxWidthPx"
-                    : null;
-
-                $placeData[] = [ 
-                    'id'        => $placeId,
-                    'name'      => $name,
-                    'address'   => $address,
-                    'photo_url' => $photoUrl,
-                ];
-            }
-
-            $active_navbar = 'recommendations';
-            $subtitle      = "Trekking";
-
-            return view (
-                'recommendations_v2',
-                [ 
-                    'active_navbar' => $active_navbar,
-                    'subtitle'      => $subtitle,
-                    'places'        => $placeData
-                ]
-            );
-        }
-        else
-        {
-            return response ()->json ( [ 
-                'error'   => 'Failed to fetch data from Google Places API',
-                'message' => $response->body (),
-            ], $response->status () );
-        }
+        return $this->displaySearchResults ( 'Hiking and Trekking Spot in Indonesia', 'Trekking' );
     }
 
     public function multiactivity_index ( Request $request )
     {
-        $apiKey = env ( 'GOOGLE_PLACES_API_KEY' );
-        $proxy  = env ( 'SOCKS5_PROXY', '' );
-        $url    = 'https://places.googleapis.com/v1/places:searchText';
-
-        $body = [ 
-            'textQuery' => 'Adventure Park Tourist Attraction in Indonesia',  // Modified query for better results
-        ];
-
-        // ...existing HTTP client setup and response handling code...
-        $httpClient = Http::withHeaders ( [ 
-            'X-Goog-Api-Key'   => $apiKey,
-            'X-Goog-FieldMask' => 'places.displayName,places.id,places.photos,places.formattedAddress',
-        ] );
-
-        if ( ! empty ( $proxy ) )
-        {
-            $httpClient = $httpClient->withOptions ( [ 'proxy' => $proxy ] );
-        }
-
-        $response = $httpClient->post ( $url, $body );
-
-        if ( $response->successful () )
-        {
-            $places = $response->json ()[ 'places' ] ?? [];
-
-            $placeData = [];
-            foreach ( $places as $place )
-            {
-                $name           = $place[ 'displayName' ][ 'text' ] ?? 'Unknown';
-                $address        = $place[ 'formattedAddress' ] ?? 'No address available';
-                $photoReference = isset ( $place[ 'photos' ][ 0 ][ 'name' ] ) ? $place[ 'photos' ][ 0 ][ 'name' ] : null;
-                $maxWidthPx     = 700;
-                $placeId        = $place[ 'id' ] ?? null;
-
-                $photoUrl = $photoReference
-                    ? "https://places.googleapis.com/v1/{$photoReference}/media?key=$apiKey&maxWidthPx=$maxWidthPx"
-                    : null;
-
-                $placeData[] = [ 
-                    'id'        => $placeId,
-                    'name'      => $name,
-                    'address'   => $address,
-                    'photo_url' => $photoUrl,
-                ];
-            }
-
-            $active_navbar = 'recommendations';
-            $subtitle      = "Multi-Activity";
-
-            return view (
-                'recommendations_v2',
-                [ 
-                    'active_navbar' => $active_navbar,
-                    'subtitle'      => $subtitle,
-                    'places'        => $placeData
-                ]
-            );
-        }
-        else
-        {
-            return response ()->json ( [ 
-                'error'   => 'Failed to fetch data from Google Places API',
-                'message' => $response->body (),
-            ], $response->status () );
-        }
+        return $this->displaySearchResults ( 'Adventure Park Tourist Attraction in Indonesia', 'Multi-Activity' );
     }
 
     public function outbond_index ( Request $request )
     {
-        $apiKey = env ( 'GOOGLE_PLACES_API_KEY' );
-        $proxy  = env ( 'SOCKS5_PROXY', '' );
-        $url    = 'https://places.googleapis.com/v1/places:searchText';
+        return $this->displaySearchResults ( 'Outbond Recreation Area in Indonesia', 'Outbond' );
+    }
 
-        $body = [ 
-            'textQuery' => 'Outbond Recreation Area in Indonesia',
-        ];
+    public function showBorobudurDetail ()
+    {
+        $borobudurPlaceId = 'ChIJl9anCfCMei4Ry8NNdDRD0w0'; // Example Place ID for Borobudur Temple
+        return $this->showPlaceDetail ( $borobudurPlaceId );
+    }
 
-        // ...existing HTTP client setup and response handling code...
-        $httpClient = Http::withHeaders ( [ 
-            'X-Goog-Api-Key'   => $apiKey,
-            'X-Goog-FieldMask' => 'places.displayName,places.id,places.photos,places.formattedAddress',
-        ] );
+    public function showBorobudurAttractions ()
+    {
+        return $this->displaySearchResults ( 'Tourist Attractions in Borobudur', 'Borobudur Attractions' );
+    }
 
-        if ( ! empty ( $proxy ) )
-        {
-            $httpClient = $httpClient->withOptions ( [ 'proxy' => $proxy ] );
-        }
+    public function showPandawaAttractions ()
+    {
+        return $this->displaySearchResults ( 'Tourist Attractions near Pandawa', 'Attractions Around Pandawa' );
+    }
 
-        $response = $httpClient->post ( $url, $body );
+    public function showTebingKeratonAttractions ()
+    {
+        return $this->displaySearchResults ( 'Tourist Attractions near Tebing Keraton Bandung', 'Attractions Around Tebing Keraton' );
+    }
 
-        if ( $response->successful () )
-        {
-            $places = $response->json ()[ 'places' ] ?? [];
-
-            $placeData = [];
-            foreach ( $places as $place )
-            {
-                $name           = $place[ 'displayName' ][ 'text' ] ?? 'Unknown';
-                $address        = $place[ 'formattedAddress' ] ?? 'No address available';
-                $photoReference = isset ( $place[ 'photos' ][ 0 ][ 'name' ] ) ? $place[ 'photos' ][ 0 ][ 'name' ] : null;
-                $maxWidthPx     = 700;
-                $placeId        = $place[ 'id' ] ?? null;
-
-                $photoUrl = $photoReference
-                    ? "https://places.googleapis.com/v1/{$photoReference}/media?key=$apiKey&maxWidthPx=$maxWidthPx"
-                    : null;
-
-                $placeData[] = [ 
-                    'id'        => $placeId,
-                    'name'      => $name,
-                    'address'   => $address,
-                    'photo_url' => $photoUrl,
-                ];
-            }
-
-            $active_navbar = 'recommendations';
-            $subtitle      = "Outbond";
-
-            return view (
-                'recommendations_v2',
-                [ 
-                    'active_navbar' => $active_navbar,
-                    'subtitle'      => $subtitle,
-                    'places'        => $placeData
-                ]
-            );
-        }
-        else
-        {
-            return response ()->json ( [ 
-                'error'   => 'Failed to fetch data from Google Places API',
-                'message' => $response->body (),
-            ], $response->status () );
-        }
+    public function showMonasAttractions ()
+    {
+        return $this->displaySearchResults ( 'Tourist Attractions near Monas Jakarta', 'Attractions Around Monas' );
     }
 }
