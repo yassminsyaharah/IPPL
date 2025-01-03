@@ -134,9 +134,9 @@
         <h1>The Travel</h1>
         <p>Get inspired! Receive travel discounts, tips and behind the scenes stories.</p>
         <div class="input-group">
-            <form action="{{ route('subscribe') }}" method="POST" class="d-flex w-100">
+            <form class="d-flex w-100" action="{{ route('subscribe') }}" method="POST">
                 @csrf
-                <input type="email" name="email" placeholder="Your email address" required>
+                <input name="email" type="email" placeholder="Your email address" required>
                 <button id="subscribe-btn" type="submit">Subscribe</button>
             </form>
         </div>
@@ -171,10 +171,10 @@
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Aktivitas</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Selancar</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Trekking</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Multi-aktivitas</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Outbound</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('surfing') }}">Selancar</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('trekking') }}">Trekking</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('multiactivity') }}">Multi-aktivitas</a></li>
+                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ route('outbond') }}">Outbound</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">
@@ -187,13 +187,11 @@
                 <h5 class="fw-bold mb-4">Tentang Kita</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Our Story</a></li>
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Work with us</a></li>
                 </ul>
             </div>
             <div class="col-md-2 mb-4">
                 <h5 class="fw-bold mb-4">Kontak</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Our Story</a></li>
                     <li class="mb-2"><a class="text-dark text-decoration-none" href="{{ url()->current() }}">Work with us</a></li>
                 </ul>
             </div>

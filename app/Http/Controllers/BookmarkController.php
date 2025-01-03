@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Bookmark;
+use App\Models\BookmarkV2;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class BookmarkController extends Controller
@@ -28,16 +30,36 @@ class BookmarkController extends Controller
         return redirect ()->back ()->with ( 'success', 'Bookmark added successfully.' );
     }
 
+    public function storeV2 ( Request $request )
+    {
+        $request->validate ( [ 
+            'place_id' => 'required|string',
+        ] );
+
+        $bookmark           = new BookmarkV2();
+        $bookmark->user_id  = Auth::id ();
+        $bookmark->place_id = $request->place_id;
+        $bookmark->save ();
+
+        return redirect ()->back ()->with ( 'success', 'Bookmark added successfully.' );
+    }
+
     /**
      * Remove the specified bookmark from storage.
      *
      * @param  \App\Models\Bookmark  $bookmark
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Bookmark $bookmark)
+    public function destroy ( Bookmark $bookmark )
     {
-        $bookmark->delete();
+        $bookmark->delete ();
 
-        return redirect()->back()->with('success', 'Bookmark removed successfully.');
+        return redirect ()->back ()->with ( 'success', 'Bookmark removed successfully.' );
+    }
+
+    public function destroyV2 ( BookmarkV2 $bookmark )
+    {
+        $bookmark->delete ();
+        return redirect ()->back ()->with ( 'success', 'Bookmark removed successfully.' );
     }
 }

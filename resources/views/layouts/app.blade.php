@@ -36,7 +36,7 @@
 
 <body class="overflow-hidden p-0 m-0">
     <div class="container-fluid vh-100 d-flex flex-column overflow-auto p-0 m-0" id="app">
-        @if (Route::currentRouteName() !== 'place.detail')
+        @if (Route::currentRouteName() !== 'place.detail' && Route::currentRouteName() !== 'place.detail_v2')
             @include('components.navbar')
         @endif
 

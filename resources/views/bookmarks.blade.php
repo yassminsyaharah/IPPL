@@ -26,6 +26,29 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             z-index: 0;
+            height: 100%;
+            /* Ensure card takes full height */
+        }
+
+        .card .row {
+            flex: 1;
+            /* Ensure row takes full height */
+        }
+
+        .card .card-image,
+        .card .card-body {
+            height: 100%;
+            /* Ensure both image and body take full height */
+        }
+
+        .card .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            /* Ensure content does not overflow */
+            max-height: 250px;
+            /* Match the max-height of the card */
         }
 
         /* Card Image Section */
@@ -128,11 +151,11 @@
 @endpush
 
 @section('content')
-    <!-- Main Content -->
     <div class="container-fluid w-100 py-5" style="padding-left: 5%; padding-right: 5%;">
         <h3 class="pb-4 fw-bold text-center">Bookmarks</h3>
         @if (Auth::check())
             <div class="card-container">
+                {{-- Local Bookmarks --}}
                 @forelse ($bookmarks as $bookmark)
                     @php
                         $place = $bookmark->destination;
@@ -141,78 +164,103 @@
                         $halfStar = $rating - $fullStars >= 0.5 ? true : false;
                         $imagePath = Storage::disk('public')->files($place->image_folder_path)[0] ?? null;
                     @endphp
-                    <!-- Card -->
                     <div class="card mb-4 shadow-sm">
+                        {{-- ...existing local bookmark card structure... --}}
                         <div class="row g-0 w-100">
                             <div class="col-md-3 p-0">
                                 <div class="card-image">
                                     @if ($imagePath)
                                         <img class="img-fluid rounded-start" src="{{ asset('storage/' . $imagePath) }}" alt="{{ $place->name }}" />
                                     @endif
-                                    <p class="badge">9 images</p>
                                 </div>
                             </div>
                             <div class="col-md-9 px-2">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $place->name }}</h5>
                                     <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ $place->address }}</p>
-                                    <div class="rating">
-                                        <p class="stars p-0 m-0 pb-1" style="color: #ff8682">
-                                            @for ($i = 0; $i < $fullStars; $i++)
-                                                <i class="fas fa-star fs-6"></i>
-                                            @endfor
-                                            @if ($halfStar)
-                                                <i class="fas fa-star-half-alt fs-6"></i>
-                                            @endif
-                                            @for ($i = $fullStars + $halfStar; $i < 5; $i++)
-                                                <i class="far fa-star fs-6"></i>
-                                            @endfor
-                                        </p>
-                                        <div class="score-reviews">
-                                            <p class="score">{{ $place->ratings }}</p>
-                                            <p class="reviews">
-                                                @php
-                                                    $ratingText = match(true) {
-                                                        $place->ratings == 5.0 => 'Excellent',
-                                                        $place->ratings >= 4.0 => 'Good',
-                                                        $place->ratings >= 3.0 => 'Fair',
-                                                        $place->ratings >= 2.0 => 'Poor',
-                                                        $place->ratings >= 1.0 => 'Very Poor',
-                                                        default => 'Terrible'
-                                                    };
-                                                @endphp
-                                                <strong>{{ $ratingText }}</strong> - <strong>{{ $place->review_count }} reviews</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <hr style="margin-top: 0px; border-top: 1px solid #000000; width: 100%;">
+                                    {{-- ...existing rating display... --}}
                                     <div class="d-flex w-100 gap-2">
                                         <form action="{{ route('bookmarks.destroy', ['bookmark' => $bookmark->id]) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="rounded-2 flex-grow-0 btn btn-outline-secondary" type="submit" style="width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-bookmark text-dark"></i>
+                                            <button class="btn btn-outline-secondary" type="submit">
+                                                <i class="fas fa-bookmark"></i>
                                             </button>
                                         </form>
-                                        <a class="btn flex-grow-1 fw-semibold align-content-center" href="{{ route('place.detail', ['id' => $place->id]) }}" style="background-color: #8dd3bb">View Place</a>
+                                        <a class="btn flex-grow-1" href="{{ route('place.detail', ['id' => $place->id]) }}" style="background-color: #8dd3bb">
+                                            View Place
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="m-0 py-3 px-2">
-                        <div class="alert alert-warning text-center shadow-sm" role="alert">
-                            Belum ada tempat yang di-bookmark. Silahkan lihat <a class="alert-link" href="{{ route('recommendations') }}">Rekomendasi</a> untuk menambahkan tempat favoritmu.
+                    @if (empty($placesBookmarks))
+                        <div class="alert alert-info">No bookmarks yet!</div>
+                    @endif
+                @endforelse
+
+                {{-- Google Places Bookmarks --}}
+                @foreach ($placesBookmarks as $place)
+                    <div class="card mb-4 shadow-sm">
+                        <div class="row g-0 w-100">
+                            <div class="col-md-3 p-0">
+                                <div class="card-image">
+                                    @if ($place['photo_url'])
+                                        <img class="img-fluid rounded-start" src="{{ $place['photo_url'] }}" alt="{{ $place['name'] }}" />
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-md-9 px-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $place['name'] }}</h5>
+                                    <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ $place['address'] }}</p>
+                                    <div class="rating">
+                                        @php
+                                            $rating = floatval($place['rating']);
+                                            $fullStars = floor($rating);
+                                            $halfStar = $rating - $fullStars >= 0.5;
+                                        @endphp
+                                        <p class="stars p-0 m-0 pb-1" style="color: #ff8682">
+                                            @for ($i = 0; $i < $fullStars; $i++)
+                                                <i class="fas fa-star"></i>
+                                            @endfor
+                                            @if ($halfStar)
+                                                <i class="fas fa-star-half-alt"></i>
+                                            @endif
+                                            @for ($i = $fullStars + ($halfStar ? 1 : 0); $i < 5; $i++)
+                                                <i class="far fa-star"></i>
+                                            @endfor
+                                        </p>
+                                        <div class="score-reviews">
+                                            <p class="score">{{ number_format($place['rating'], 1) }}</p>
+                                            <p class="reviews">
+                                                <strong>{{ $place['review_count'] }} reviews</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex w-100 gap-2">
+                                        <form action="{{ route('bookmarks.destroyV2', ['bookmark' => $place['id']]) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-outline-secondary" type="submit">
+                                                <i class="fas fa-bookmark"></i>
+                                            </button>
+                                        </form>
+                                        <a class="btn flex-grow-1" href="{{ route('place.detail_v2', ['placeId' => $place['place_id']]) }}" style="background-color: #8dd3bb">
+                                            View Place
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                @endforelse
+                @endforeach
             </div>
         @else
-            <div class="m-0 py-3 px-2">
-                <div class="alert alert-warning text-center shadow-sm" role="alert">
-                    Silakan <a class="alert-link" href="{{ route('login') }}">Login</a> terlebih dahulu untuk melihat bookmark Anda.
-                </div>
+            <div class="alert alert-warning text-center">
+                Please <a href="{{ route('login') }}">login</a> to view your bookmarks.
             </div>
         @endif
     </div>

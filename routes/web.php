@@ -4,11 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\DestinationController;
-use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\DashboardAdminController;
+use App\Http\Controllers\IntelligentSystemController;
 
 // Onboarding Routes
 Route::get (
@@ -202,3 +203,40 @@ Route::middleware ( 'CheckIfAdmin' )
             [ DestinationController::class, 'destroy' ]
         )->name ( 'destinations.destroy' );
     } );
+
+// Intelligent System Routes (Google Places API)
+Route::middleware ( 'CheckIfAuth' )
+    ->group ( function ()
+    {
+        Route::get (
+            '/surfing',
+            [ IntelligentSystemController::class, 'surfing_index' ]
+        )->name ( 'surfing' );
+
+        Route::get (
+            '/trekking',
+            [ IntelligentSystemController::class, 'trekking_index' ]
+        )->name ( 'trekking' );
+
+        Route::get (
+            '/multiactivity',
+            [ IntelligentSystemController::class, 'multiactivity_index' ]
+        )->name ( 'multiactivity' );
+
+        Route::get (
+            '/outbond',
+            [ IntelligentSystemController::class, 'outbond_index' ]
+        )->name ( 'outbond' );
+
+        Route::get (
+            '/place_v2/{placeId}',
+            [ IntelligentSystemController::class, 'showPlaceDetail' ]
+        )->name ( 'place.detail_v2' );
+
+    } );
+
+Route::middleware ( 'auth' )->group ( function ()
+{
+    Route::post ( '/bookmarksv2', [ BookmarkController::class, 'storeV2' ] )->name ( 'bookmarks.storeV2' );
+    Route::delete ( '/bookmarksv2/{bookmark}', [ BookmarkController::class, 'destroyV2' ] )->name ( 'bookmarks.destroyV2' );
+} );
