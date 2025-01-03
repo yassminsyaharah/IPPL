@@ -11,12 +11,21 @@ class IntelligentSystemController extends Controller
     private $apiKey;
     private $proxy;
     private $baseUrl;
+    private $enableProxy;
 
-    public function __construct ()
+    public function __construct()
     {
-        $this->apiKey  = env ( 'GOOGLE_PLACES_API_KEY' );
-        $this->proxy   = env ( 'SOCKS5_PROXY', '' );
+        $this->apiKey = env('GOOGLE_PLACES_API_KEY');
         $this->baseUrl = 'https://places.googleapis.com/v1';
+        
+        // Default values if ENV variables are not set
+        $this->proxy = env('SOCKS5_PROXY') ?? '';
+        $this->enableProxy = filter_var(env('ENABLE_PROXY', false), FILTER_VALIDATE_BOOLEAN);
+        
+        // Set no_proxy if provided
+        if (env('NO_PROXY')) {
+            putenv('no_proxy=' . env('NO_PROXY'));
+        }
     }
 
     /**
@@ -28,7 +37,7 @@ class IntelligentSystemController extends Controller
             'X-Goog-Api-Key' => $this->apiKey,
         ] );
 
-        if ( ! empty ( $this->proxy ) )
+        if ( ! empty ( $this->proxy ) && $this->enableProxy )
         {
             $httpClient = $httpClient->withOptions ( [ 'proxy' => $this->proxy ] );
         }
