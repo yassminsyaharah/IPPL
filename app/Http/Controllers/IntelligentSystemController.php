@@ -19,7 +19,7 @@ class IntelligentSystemController extends Controller
         // Configure the HTTP client
         $httpClient = Http::withHeaders ( [ 
             'X-Goog-Api-Key'   => $apiKey,
-            'X-Goog-FieldMask' => 'displayName,rating,formattedAddress,photos,editorialSummary,userRatingCount,reviews.rating,reviews.text,reviews.authorAttribution'
+            'X-Goog-FieldMask' => 'displayName,rating,formattedAddress,photos,editorialSummary,userRatingCount,reviews.rating,reviews.text,reviews.authorAttribution,googleMapsUri'
         ] );
 
         if ( ! empty ( $proxy ) )
@@ -60,24 +60,26 @@ class IntelligentSystemController extends Controller
                 'address'      => $placeDetails[ 'formattedAddress' ] ?? 'No address available',
                 'reviews'      => $placeDetails[ 'reviews' ] ?? [],
                 'photos'       => $photos,
+                'maps_link'    => $placeDetails[ 'googleMapsUri' ] ?? ''
             ];
 
             $active_navbar = 'recommendations';
 
             $isBookmarked = false;
-            $bookmarkId = null;
-            
-            if (Auth::check()) {
-                $bookmark = Auth::user()->bookmarksV2()->where('place_id', $placeId)->first();
-                $isBookmarked = !is_null($bookmark);
-                $bookmarkId = $bookmark ? $bookmark->id : null;
+            $bookmarkId   = null;
+
+            if ( Auth::check () )
+            {
+                $bookmark     = Auth::user ()->bookmarksV2 ()->where ( 'place_id', $placeId )->first ();
+                $isBookmarked = ! is_null ( $bookmark );
+                $bookmarkId   = $bookmark ? $bookmark->id : null;
             }
 
             return view ( 'place-detail_v2', [ 
                 'active_navbar' => $active_navbar,
                 'place'         => $place,
-                'isBookmarked' => $isBookmarked,
-                'bookmarkId' => $bookmarkId
+                'isBookmarked'  => $isBookmarked,
+                'bookmarkId'    => $bookmarkId
             ] );
         }
         else

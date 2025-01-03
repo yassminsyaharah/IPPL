@@ -109,6 +109,12 @@
         <div class="px-5 py-2">
             <!-- Content -->
             <div class="mt-4">
+                <p>
+                    <strong>Alamat:</strong> {{ $place->address }}
+                    <a href="{{ $place->maps_link }}" target="_blank">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </p>
                 <h4>Reviews</h4>
                 @if (count($place->reviews) > 0)
                     @foreach ($place->reviews as $review)
@@ -132,9 +138,6 @@
                 @else
                     <p class="text-muted">No reviews available for this place.</p>
                 @endif
-                <p>
-                    <strong>Alamat:</strong> {{ $place->address }}<br>
-                </p>
             </div>
 
             <!-- Images Carousel -->
